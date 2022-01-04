@@ -9,5 +9,5 @@ Pipelines are written in [WDL language](https://github.com/openwdl/wdl) and [Cro
 knitr::include_graphics("https://user-images.githubusercontent.com/22381693/69014860-a7299300-09e2-11ea-9d1a-1840d0d609d7.png")
 ```
 
-Find the full documentation here.
+Find the full documentation [here](http://www.dcassol.com/wdl_rnaseq/).
 

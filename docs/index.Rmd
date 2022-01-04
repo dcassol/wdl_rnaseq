@@ -28,18 +28,10 @@ Pipelines are written in [WDL language](https://github.com/openwdl/wdl) and [Cro
 
 - `Fastqc` Quality Report 
 - Reads Trimming with `Trimmomatic`
-- Mapping (BAM files)
+- Align Reads to Reference Genome using `HISAT2` (BAM files)
 - Gene count table (raw)
-Step 1: Load a Genome into the Narrative
-Step 2: Import Single-End Reads from Web
-Step 3: Create RNA-seq Sample Set
-Step 4: Assess Sample Set using FastQC
-Step 5: Align Reads to Reference Genome using HISAT2
-Step 6: Assemble Transcripts using StringTie
-Step 7: Create Average Expression Matrix
-Step 8: Create Differential Expression Matrix using DESeq2
-Step 9: Create Feature set and Filtered Differential Expression Matrix
-Step 10: Functional Enrichment of Differential Expressed Feature Set
+- Differential Expression Matrix using `DESeq2`
+- Create Feature set and Filtered Differential Expression Matrix
 
 ## Quick Start - No Installation required {.unnumbered}
 
