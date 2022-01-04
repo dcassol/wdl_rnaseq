@@ -29,7 +29,7 @@ Pipelines are written in [WDL language](https://github.com/openwdl/wdl) and [Cro
 - `Fastqc` Quality Report 
 - Reads Trimming with `Trimmomatic`
 - Align Reads to Reference Genome using `HISAT2` (BAM files)
-- Gene count table (raw)
+- Expression quantification using `summarizeOverlaps (GenomicFeatures)` [@Lawrence2013-kt]
 - Differential Expression Matrix using `DESeq2`
 - Create Feature set and Filtered Differential Expression Matrix
 
@@ -42,7 +42,8 @@ docker exec -it <IMAGE NAME> /bin/bash
 cromwell run rnaseq.wdl -i rnaseq.json -o rnaseq.options.json 
 ```
 
-Now, you can test and edit the pipeline for your data. Have fun!
+Now, you can test and edit the pipeline for your data. For more details, please 
+check the `Sample Data` section. Have fun!
 
 ## Quick Start {.unnumbered}
 

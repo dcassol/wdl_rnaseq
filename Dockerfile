@@ -35,6 +35,11 @@ RUN Rscript --vanilla -e "options(repos = c(CRAN = 'https://cran.r-project.org')
 
 ## Install required Bioconductor packages 
 RUN Rscript -e 'BiocManager::install("tgirke/systemPipeR")'
+RUN Rscript -e 'install.packages("tinytex")'
+RUN Rscript -e 'tinytex::install_tinytex()'
+RUN Rscript -e 'install.packages("bookdown")'
+RUN Rscript -e 'install.packages("bslib")'
+RUN Rscript -e 'install.packages("downlit")'
 
 ## Metadata
 LABEL name="dcassol/wdl_rnaseq" \
