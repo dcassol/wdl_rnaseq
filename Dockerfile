@@ -35,6 +35,7 @@ RUN Rscript --vanilla -e "options(repos = c(CRAN = 'https://cran.r-project.org')
 
 ## Install required Bioconductor packages 
 RUN Rscript -e 'BiocManager::install("tgirke/systemPipeR")'
+RUN Rscript -e 'BiocManager::install("GenomicFeatures")'
 RUN Rscript -e 'install.packages("tinytex")'
 RUN Rscript -e 'tinytex::install_tinytex()'
 RUN Rscript -e 'install.packages("bookdown")'
