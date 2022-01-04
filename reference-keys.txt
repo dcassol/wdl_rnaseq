@@ -2,6 +2,9 @@ directory-structure
 sample-data
 sample-data-file
 how-to-customize-sample-data-file-for-your-samples
+usage
+inputs
+outputs
 resources
 wdl
 cromwell
