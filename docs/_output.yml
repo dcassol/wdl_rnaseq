@@ -1,0 +1,19 @@
+bookdown::bs4_book:
+  theme:
+    primary: "#00758a"
+    yellow: "#804600"
+    h4-font-size: "1.1rem"
+    headings-color: "#87b13f"
+  repo:
+    base: https://github.com/dcassol/wdl_rnaseq
+    branch: main
+    subdir: docs
+
+bookdown::pdf_book:
+  includes:
+    in_header: preamble.tex
+  latex_engine: xelatex
+  citation_package: natbib
+
+bookdown::epub_book:
+  stylesheet: style.css

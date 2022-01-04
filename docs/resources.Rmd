@@ -1,0 +1,9 @@
+# Resources
+
+## WDL
+
+WDL is a workflow description language to define tasks and workflows. WDL aims to describe tasks with abstract commands that have inputs, and once defined, allows you to wire them together to form complex workflows. Find more information [here](https://github.com/openwdl/wdl).
+
+## CROMWELL
+
+CROMWELL is the execution engine that supports running WDL scripts on three types of platforms: local machine, a local cluster/compute farm accessed via a job scheduler (e.g. Slurm) or a cloud platform (e.g. Amazon AWS). Find more information [here](https://cromwell.readthedocs.io/en/stable/).

@@ -1,0 +1,68 @@
+# Directory Structure
+
+This repository contains all the necessary directories and files to run the pipeline. 
+For reproducibility, the user wants to maintain the structure of this project directory:
+
+Directory names are indicated in <span style="color:green">***green***</span>.
+Users can change this structure as needed, but need to adjust the code in their
+workflows accordingly.
+
+- <span style="color:green">***wdl_rnaseq/***</span> (*e.g.* *myproject/*)
+    - This is the root directory for running the workflow.
+    - *rnaseq.wdl*, *rnaseq.options.json*, and *rnaseq.json* files.
+    - Sample annotation (* samples.txt*) files are located here.
+    - **Important subdirectories**:
+      - <span style="color:green">***data/*** </span>
+        - Raw data (*e.g.* FASTQ files)
+        - FASTA file of reference (*e.g.* reference genome)
+        - Annotation files
+        - Metadata
+        - etc.
+      - <span style="color:green">***tasks/***</span>
+        - <span style="color:green">*tasks/\*wdl/*</span>: All individual steps. 
+      - <span style="color:green">***param/***</span>
+        - <span style="color:green">*param/adapter/*</span>: Illumina adapters for Trimmomatic.
+      - <span style="color:green">***results/***</span>
+        - Analysis results are usually written to this directory, including: alignment, variant and peak files (BAM, VCF, BED); tabular result files; and image/plot files
+
+# Sample Data
+
+For this demonstration, the chosen data set [SRP010938](http://www.ncbi.nlm.nih.gov/sra/?term=SRP010938)
+contains 18 paired-end (PE) read sets from *Arabidopsis thaliana*
+[@Howard2013-fq].
+
+To minimize processing time during testing, each FASTQ
+file has been subsetted to 90,000-100,000 randomly sampled PE reads that
+map to the first 100,000 nucleotides of each chromosome of the *A.
+thaliana* genome. The corresponding reference genome sequence (FASTA) and
+its GFF annotation files have been truncated accordingly. This way the entire 
+test sample data set is less than 200MB in storage space. The mini sample FASTQ 
+files used by this demonstration as well as the associated reference genome files can be loaded via the *systemPipeRdata* package [@H_Backman2016-bt]. 
+
+```{r genNew, eval=FALSE}
+systemPipeRdata::genWorkenvir(workflow = "rnaseq", mydirname = "rnaseq")
+setwd("rnaseq")
+dir("data/")
+```
+
+```{r data, eval=TRUE, echo=FALSE}
+dir("../data/")
+```
+
+## Sample Data file
+
+In a sample file (tabular format) with a single type of input files, here FASTQ files of
+paired-end (PE) reads, the first and second column describe the path and the third column represents a unique `id` name for each sample. The fourth column represents 
+the biological replicates. All subsequent columns are additional
+information, and any number of extra columns can be added as needed.
+
+```{bash, echo=FALSE}
+head ../samples.txt 
+```
+
+## How to customize sample data file for your samples?
+
+- Copy the FASTQ files to <span style="color:green">***data/*** </span>.
+- Copy the reference genome to <span style="color:green">***data/*** </span>.
+- Replace the files PATH to the first and second columns in the *sample.txt* file, and 
+the respective `IDs` and `biological replicates information`.

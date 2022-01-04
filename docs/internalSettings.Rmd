@@ -1,0 +1,249 @@
+# Settings
+
+This section will demonstrate *how to*:
+
+- [install `cromwell`](settings.html#install-cromwell-locally);
+- [create the docker image used in this tutorial and deploy docker image on Docker Hub](settings.html#docker);
+- [create Singularity container from docker](settings.html#singularity-container);
+- [build the webpage](settings.html#build-website).
+
+Extra notes are included here. 
+
+```{r setup3, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Install `cromwell` locally
+
+### How to Install `cromwell` locally with Conda
+
+#### How to Install Conda
+
+```{bash, eval=FALSE}
+wget https://repo.anaconda.com/miniconda/Miniconda3-py38_4.10.3-Linux-x86_64.sh
+bash Miniconda3-latest-Linux-x86_64.sh
+conda config --add channels conda-forge
+conda config --set channel_priority strict
+conda install <package-name>
+conda deactivate ## deactivate
+conda activate ## activate
+conda update -n base -c defaults conda ## update
+conda --version ## check version 
+## conda 4.11.0
+```
+
+#### Install `cromwell` locally with Conda
+
+```{bash, eval=FALSE}
+conda install cromwell
+cromwell --version
+## cromwell 72
+```
+
+### How to Install `cromwell` from GitHub
+
+```{bash, eval=FALSE}
+cd ~
+mkdir cromwell
+cd cromwell/
+wget https://github.com/broadinstitute/cromwell/releases/download/72/cromwell-72.jar
+cd ~
+java -jar ~/cromwell/cromwell-72.jar
+``` 
+
+To simplify, you can create a file call `cromwell` and export to your PATH
+
+```{bash, eval=FALSE}
+!/bin/bash
+<cromwell_PATH>/cromwell-72.jar $@
+```
+
+```{bash, eval=FALSE}
+cromwell --version
+```
+
+## Docker
+
+### How to create a repository:
+
+- Create your first repository [Link](https://docs.docker.com/docker-hub/)
+
+1) Sign in to Docker Hub.
+2) Click `Create a Repository` on the Docker Hub welcome page:
+    a) Name it <your-username>/my-repo.
+    b) Add a Description.
+    b) Click `Create`.
+
+### Build and push a container image to **Docker Hub** from your computer
+
+#### Start by creating a *Dockerfile* to specify your application
+
+```{bash, eval=FALSE}
+mkdir docker_test
+cd docker_test
+touch Dockerfile
+```
+
+```
+## Docker LBL
+FROM bioconductor/bioconductor_docker:devel
+
+RUN apt-get update && \
+    apt-get install -y hisat2 bowtie bowtie2 bwa samtools vim && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /home/project/RNAseq/
+
+COPY --chown=rstudio:rstudio . /home/project/RNAseq/
+
+## Update Bioconductor packages from devel version
+#RUN Rscript --vanilla -e "options(repos = c(CRAN = 'https://cran.r-project.org')); BiocManager::install(ask=FALSE)"
+
+## Metadata
+LABEL name="dcassol/wdl_rnaseq" \
+      version="wdl_rnaseq:latest" \
+      url="https://github.com/dcassol/wdl_rnaseq" \
+      vendor="LBL RNAseq Workflow" \
+      maintainer="danicassol@gmail.com" \
+      description="LBL RNAseq Workflow docker image" \
+      license="Artistic-2.0"
+```
+
+This is a minimal example. Please find [here](https://hub.docker.com/repository/docker/dcassol/wdl_rnaseq) more details. 
+
+#### Run `docker build` to build your Docker image
+
+```{bash, eval=FALSE}
+docker build -t dcassol/wdl_rnaseq . 
+```
+
+#### Run `docker run` to test your Docker image locally
+
+```{bash, eval=FALSE}
+docker run -dP dcassol/wdl_rnaseq
+docker ps 
+docker exec -it <IMAGE NAME> /bin/bash
+```
+
+#### Run `docker push` to push your Docker image to **Docker Hub**
+
+```{bash, eval=FALSE}
+docker push dcassol/wdl_rnaseq
+```
+
+- Your repository in **Docker Hub** should now display a new latest tag under `Tags`
+
+#### Make changes to the container and Create the new image
+
+Create a folder, for example:
+
+```{bash, eval=FALSE}
+docker run -dP dcassol/wdl_rnaseq
+docker ps ## To check the NAME <lucid_grothendieck>
+docker exec -it lucid_grothendieck /bin/bash
+root@33c758eb1626:/# R
+setwd("home/rstudio/")
+systemPipeRdata::genWorkenvir("rnaseq")
+exit
+docker commit -m "Added rnaseq template" -a "Dani Cassol" lucid_grothendieck dcassol/wdl_rnaseq:rnaseq
+docker push dcassol/wdl_rnaseq:rnaseq
+```
+
+Run the new image:
+
+```{bash, eval=FALSE}
+docker run  -dP dcassol/wdl_rnaseq:rnaseq
+docker ps 
+docker exec -it <IMAGE NAME> /bin/bash
+```
+
+### Docker Commands
+
+- Docker Login
+```docker login```
+
+- List which docker machines are available locally
+```docker images```
+
+- List running containers
+```docker ps```
+
+- List all containers
+```docker ps -a```
+
+- Resume a stopped container
+```docker start <CONTAINER ID>```
+
+- Shell into a running container
+```docker exec -it <CONTAINER ID> /bin/bash```
+
+- Stop OR remove a cointainer
+```docker stop <CONTAINER ID>```
+```docker rm <CONTAINER ID>```
+
+- Remove a image
+```docker rmi dcassol/systempipeworkshop2021:rnaseq```
+
+## Singularity Container
+
+Please download the Docker image of *dcassol/wdl_rnaseq*, as follow:
+
+```{bash, eval=FALSE}
+singularity pull docker://dcassol/wdl_rnaseq:latest
+```
+
+You can also use the `build` command to download pre-built images from Docker. 
+Unlike `pull`, `build` will convert the image to the latest `Singularity` image format after downloading it.
+
+```{bash, eval=FALSE}
+singularity build wdl_rnaseq_docker_latest.sif docker://dcassol/wdl_rnaseq:latest
+```
+
+To run the container:
+
+```{bash, eval=FALSE}
+singularity shell wdl_rnaseq_docker_latest.sif
+```
+
+## Build Website
+
+This website was created by the **bookdown** package [@R-bookdown]. 
+To build locally, please use the following command:
+
+```{r, eval=FALSE}
+setwd("docs")
+bookdown::render_book('index.Rmd', 'bookdown::bs4_book')
+```
+
+This repository uses [GitHub Action](https://github.com/dcassol/wdl_rnaseq/blob/main/.github/workflows/build_deploy.yaml), and if any file is updated or created, the website will be deployed using [GitHub Pages](https://pages.github.com/), after pushing. 
+
+## Resources
+
+- [Docker Run: How to create images from an application](https://www.mirantis.com/blog/how-do-i-create-a-new-docker-image-for-my-application/)
+- [Docker Hub Quickstart](https://docs.docker.com/docker-hub/)
+- [Configure GitHub Actions](https://docs.docker.com/ci-cd/github-actions/)
+- [Singularity](https://sylabs.io/guides/3.0/user-guide/quick_start.html#interact-with-images)
+
+## Common Problems
+
+```
+## Got permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Post http://%2Fvar%2Frun%2Fdocker.sock/v1.24/auth: dial unix /var/run/docker.sock: connect: permission denied
+```
+
+Solution:
+
+```{bash, eval=FALSE}
+sudo chmod 666 /var/run/docker.sock
+```
+
+## Extra: 
+
+- https://biowdl-input-converter.readthedocs.io/en/stable/#creating-comma-delimited-files
+
+```{bash, eval=FALSE}
+pip install biowdl-input-converter
+biowdl-input-converter --validate samples.csv
+biowdl-input-converter -f csv -o samples.yaml samples.csv 
+```
+

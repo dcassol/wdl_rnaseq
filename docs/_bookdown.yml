@@ -1,0 +1,12 @@
+book_filename: "rnaseq wdl pipeline"
+delete_merged_file: true
+language:
+  ui:
+    chapter_name: "Chapter "
+rmd_files: ["index.Rmd", 
+            "demo_data.Rmd",
+            "resources.Rmd",
+            "systemPipeRNAseq_docs.Rmd",
+            "internalSettings.Rmd",
+            "references.Rmd"]
+clean: [pipeline.bib]

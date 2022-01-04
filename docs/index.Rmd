@@ -1,0 +1,82 @@
+--- 
+title: "RNA-seq Workflow"
+author:
+  - Daniela Cassol
+date: "`r Sys.Date()`"
+site: bookdown::bookdown_site
+documentclass: book
+bibliography: [pipeline.bib, book.bib, bibtex.bib]
+biblio-style: apalike
+link-citations: yes
+description: "This is a RNA-seq template workflow."
+---
+
+# Welcome {-}
+
+## About {.unnumbered}
+
+```{r, fig.align='center', echo=FALSE, out.height="200px"}
+knitr::include_graphics("https://user-images.githubusercontent.com/22381693/69014860-a7299300-09e2-11ea-9d1a-1840d0d609d7.png")
+```
+
+This repository containers RNA-seq pipeline, docker container and sample data for testing.
+Pipelines are written in [WDL language](https://github.com/openwdl/wdl) and [Cromwell](https://cromwell.readthedocs.io/en/stable/) workflow execution engine is used to run them.
+
+## Is this workflow useful for you? {.unnumbered}
+
+**Expected output**
+
+- `Fastqc` Quality Report 
+- Reads Trimming with `Trimmomatic`
+- Mapping (BAM files)
+- Gene count table (raw)
+Step 1: Load a Genome into the Narrative
+Step 2: Import Single-End Reads from Web
+Step 3: Create RNA-seq Sample Set
+Step 4: Assess Sample Set using FastQC
+Step 5: Align Reads to Reference Genome using HISAT2
+Step 6: Assemble Transcripts using StringTie
+Step 7: Create Average Expression Matrix
+Step 8: Create Differential Expression Matrix using DESeq2
+Step 9: Create Feature set and Filtered Differential Expression Matrix
+Step 10: Functional Enrichment of Differential Expressed Feature Set
+
+## Quick Start - No Installation required {.unnumbered}
+
+```{bash, eval=FALSE}
+docker run  -dP dcassol/wdl_rnaseq
+docker ps 
+docker exec -it <IMAGE NAME> /bin/bash
+cromwell run rnaseq.wdl -i rnaseq.json -o rnaseq.options.json 
+```
+
+Now, you can test and edit the pipeline for your data. Have fun!
+
+## Quick Start {.unnumbered}
+
+**Step 1**: Clone the git repository to a directory on your computer:
+
+```{bash, eval=FALSE}
+https://github.com/dcassol/wdl_rnaseq.git
+```
+
+Note: Ensure you have the correct permissions to run the pipeline - here we are using `Docker`. 
+A further section will be provided containing more details if you are running in an HPC environment. 
+
+**Step 2**: To run the pipeline use the command below:
+
+```{bash, eval=FALSE}
+cromwell run rnaseq.wdl -i rnaseq.json -o rnaseq.options.json 
+## OR
+java -jar cromwell-72.jar run rnaseq.wdl -i rnaseq.json -o rnaseq.options.json
+```
+
+Please, make sure use the correct PATH to `cromwell-72.jar` file.
+
+```{r include=FALSE}
+# automatically create a bib database for R packages
+knitr::write_bib(c(
+  .packages(), 'bookdown', 'knitr', 'rmarkdown'
+), 'pipeline.bib')
+```
+

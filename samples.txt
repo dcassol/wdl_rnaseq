@@ -1,0 +1,5 @@
+./data/SRR446027_1.fastq.gz	./data/SRR446027_2.fastq.gz	M1A	M1	Mock.1h.A
+./data/SRR446028_1.fastq.gz	./data/SRR446028_2.fastq.gz	M1B	M1	Mock.1h.B
+./data/SRR446029_1.fastq.gz	./data/SRR446029_2.fastq.gz	A1A	A1	Avr.1h.A
+./data/SRR446030_1.fastq.gz	./data/SRR446030_2.fastq.gz	A1B	A1	Avr.1h.B
+
