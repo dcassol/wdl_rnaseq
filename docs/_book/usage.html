@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Chapter 3 Usage | RNA-seq Workflow</title>
+<meta name="author" content="Daniela Cassol">
+<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.2"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/header-attrs-2.9/header-attrs.js"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
+<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.2.5.1/tabs.js"></script><script src="libs/bs3compat-0.2.5.1/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
+<script src="libs/bs4_book-1.0.0/bs4_book.js"></script><script src="libs/htmlwidgets-1.5.3/htmlwidgets.js"></script><link href="libs/vizjs-2.1.2/plotwf.css" rel="stylesheet">
+<script src="libs/vizjs-2.1.2/viz.js"></script><script src="libs/vizjs-2.1.2/full.render.js"></script><script src="libs/dom_to_image-2.6/dom_to_image.js"></script><link id="plotwf_legend-1-attachment" rel="attachment" href="libs/plotwf_legend-1/plotwf_legend.svg">
+<script src="libs/plotwf-binding-2.1.12/plotwf.js"></script><script src="https://cdn.jsdelivr.net/autocomplete.js/0/autocomplete.jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/mark.js@8.11.1/dist/mark.min.js"></script><!-- CSS -->
+</head>
+<body data-spy="scroll" data-target="#toc">
+
+<div class="container-fluid">
+<div class="row">
+  <header class="col-sm-12 col-lg-3 sidebar sidebar-book"><a class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
+
+    <div class="d-flex align-items-start justify-content-between">
+      <h1>
+        <a href="index.html" title="">RNA-seq Workflow</a>
+      </h1>
+      <button class="btn btn-outline-primary d-lg-none ml-2 mt-1" type="button" data-toggle="collapse" data-target="#main-nav" aria-expanded="true" aria-controls="main-nav"><i class="fas fa-bars"></i><span class="sr-only">Show table of contents</span></button>
+    </div>
+
+    <div id="main-nav" class="collapse-lg">
+      <form role="search">
+        <input id="search" class="form-control" type="search" placeholder="Search" aria-label="Search">
+</form>
+
+      <nav aria-label="Table of contents"><h2>Table of contents</h2>
+        <ul class="book-toc list-unstyled">
+<li><a class="" href="index.html">Welcome</a></li>
+<li><a class="" href="directory-structure.html"><span class="header-section-number">1</span> Directory Structure</a></li>
+<li><a class="" href="sample-data.html"><span class="header-section-number">2</span> Sample Data</a></li>
+<li><a class="active" href="usage.html"><span class="header-section-number">3</span> Usage</a></li>
+<li><a class="" href="resources.html"><span class="header-section-number">4</span> Resources</a></li>
+<li><a class="" href="systempiper-rna-seq-workflow-analysis.html"><span class="header-section-number">5</span> systemPipeR RNA-seq Workflow Analysis</a></li>
+<li><a class="" href="settings.html"><span class="header-section-number">6</span> Settings</a></li>
+<li><a class="" href="references-1.html">References</a></li>
+</ul>
+
+        <div class="book-extra">
+          <p><a id="book-repo" href="https://github.com/dcassol/wdl_rnaseq">View book source <i class="fab fa-github"></i></a></p>
+        </div>
+      </nav>
+</div>
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="usage" class="section level1" number="3">
+<h1>
+<span class="header-section-number">3</span> Usage<a class="anchor" aria-label="anchor" href="#usage"><i class="fas fa-link"></i></a>
+</h1>
+<p>This workflow can be run using <code>Cromwell</code>:</p>
+<p>The workflow can then be started with the following command:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="usage.html#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">java</span> <span class="dt">\</span></span>
+<span id="cb7-2"><a href="usage.html#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">-jar</span> cromwell-<span class="op">&lt;</span>version<span class="op">&gt;</span>.jar <span class="dt">\</span></span>
+<span id="cb7-3"><a href="usage.html#cb7-3" aria-hidden="true" tabindex="-1"></a>    run <span class="dt">\</span></span>
+<span id="cb7-4"><a href="usage.html#cb7-4" aria-hidden="true" tabindex="-1"></a>    rnaseq.wdl <span class="dt">\</span></span>
+<span id="cb7-5"><a href="usage.html#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">-o</span> rnaseq.options.json  <span class="dt">\</span></span>
+<span id="cb7-6"><a href="usage.html#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">-i</span> rnaseq.json <span class="dt">\</span></span></code></pre></div>
+<p>The <code>rnaseq.options.json</code> contains the following json:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="usage.html#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">{</span></span>
+<span id="cb8-2"><a href="usage.html#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"final_workflow_outputs_dir"</span><span class="ex">:</span> <span class="st">"results"</span>,</span>
+<span id="cb8-3"><a href="usage.html#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"use_relative_output_paths"</span><span class="ex">:</span> true,</span>
+<span id="cb8-4"><a href="usage.html#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"default_runtime_attributes"</span><span class="ex">:</span> {</span>
+<span id="cb8-5"><a href="usage.html#cb8-5" aria-hidden="true" tabindex="-1"></a>        <span class="st">"docker"</span><span class="ex">:</span> <span class="st">"dcassol/wdl_rnaseq"</span></span>
+<span id="cb8-6"><a href="usage.html#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">}</span></span>
+<span id="cb8-7"><a href="usage.html#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="er">}</span></span></code></pre></div>
+<p>The <code>rnaseq.options.json</code> will make sure all outputs will be copy to
+<code>./results</code>.</p>
+<div id="inputs" class="section level2" number="3.1">
+<h2>
+<span class="header-section-number">3.1</span> Inputs<a class="anchor" aria-label="anchor" href="#inputs"><i class="fas fa-link"></i></a>
+</h2>
+<p>Inputs are provided through a <code>JSON</code> file.</p>
+<p>Please note here that for each major step, we are providing subdirectories for the
+output file. Also, the sample data file is provided here:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="usage.html#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">{</span></span>
+<span id="cb9-2"><a href="usage.html#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"rnaseq.outdir_fastqc"</span><span class="ex">:</span> <span class="st">"fastqc/"</span>,</span>
+<span id="cb9-3"><a href="usage.html#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"rnaseq.outdir_trimmomatic"</span><span class="ex">:</span> <span class="st">"trimmomatic/"</span>,</span>
+<span id="cb9-4"><a href="usage.html#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"rnaseq.outdir_hs2b"</span><span class="ex">:</span> <span class="st">"data_reference/"</span>, </span>
+<span id="cb9-5"><a href="usage.html#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">"rnaseq.outdir_hisat2"</span><span class="ex">:</span> <span class="st">"hisat2/"</span>,</span>
+<span id="cb9-6"><a href="usage.html#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">"rnaseq.inputSamplesFile"</span><span class="ex">:</span> <span class="st">"./samples.txt"</span>,</span>
+<span id="cb9-7"><a href="usage.html#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="kw">}</span></span></code></pre></div>
+<p>Trimmomatic inputs:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="usage.html#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">{</span></span>
+<span id="cb10-2"><a href="usage.html#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"rnaseq.trimmomatic_path"</span><span class="ex">:</span> <span class="st">"trimmomatic"</span>,</span>
+<span id="cb10-3"><a href="usage.html#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"rnaseq.seqType"</span><span class="ex">:</span> <span class="st">"PE"</span>,</span>
+<span id="cb10-4"><a href="usage.html#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"rnaseq.TRIM_threads"</span><span class="ex">:</span> 2,</span>
+<span id="cb10-5"><a href="usage.html#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">"rnaseq.Phred"</span><span class="ex">:</span> <span class="st">"-phred64"</span>,</span>
+<span id="cb10-6"><a href="usage.html#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">"rnaseq.truseq_pe_adapter"</span><span class="ex">:</span> <span class="st">"param/adapters/TruSeq3-PE.fa"</span>,</span>
+<span id="cb10-7"><a href="usage.html#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">"rnaseq.leading"</span><span class="ex">:</span> 3,</span>
+<span id="cb10-8"><a href="usage.html#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">"rnaseq.trailing"</span><span class="ex">:</span> 3,</span>
+<span id="cb10-9"><a href="usage.html#cb10-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">"rnaseq.window"</span><span class="ex">:</span> 4,</span>
+<span id="cb10-10"><a href="usage.html#cb10-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">"rnaseq.quality"</span><span class="ex">:</span> 5,</span>
+<span id="cb10-11"><a href="usage.html#cb10-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">"rnaseq.minLength"</span><span class="ex">:</span> 35,</span>
+<span id="cb10-12"><a href="usage.html#cb10-12" aria-hidden="true" tabindex="-1"></a><span class="kw">}</span></span></code></pre></div>
+<p><code>Hisat2</code> inputs:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="usage.html#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">{</span></span>
+<span id="cb11-2"><a href="usage.html#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"rnaseq.reference"</span><span class="ex">:</span> <span class="st">"data/tair10.fasta"</span>,</span>
+<span id="cb11-3"><a href="usage.html#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"rnaseq.sortThreads"</span><span class="ex">:</span> 2,</span>
+<span id="cb11-4"><a href="usage.html#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"rnaseq.hisat2threads"</span><span class="ex">:</span> 2,</span>
+<span id="cb11-5"><a href="usage.html#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="kw">}</span></span></code></pre></div>
+<p>Quantification inputs:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="usage.html#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">{</span></span>
+<span id="cb12-2"><a href="usage.html#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"rnaseq.gff"</span><span class="ex">:</span> <span class="st">"data/tair10.gff"</span>,</span>
+<span id="cb12-3"><a href="usage.html#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"rnaseq.dataSource"</span><span class="ex">:</span> <span class="st">"TAIR"</span>,</span>
+<span id="cb12-4"><a href="usage.html#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"rnaseq.db_path"</span><span class="ex">:</span> <span class="st">"tair10.sqlite"</span>,</span>
+<span id="cb12-5"><a href="usage.html#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">"rnaseq.script_quant"</span><span class="ex">:</span> <span class="st">"tasks/scripts/quantification.doc.R"</span>,</span>
+<span id="cb12-6"><a href="usage.html#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">"rnaseq.targets"</span><span class="ex">:</span> <span class="st">"targetsPE.txt"</span>,</span>
+<span id="cb12-7"><a href="usage.html#cb12-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">"rnaseq.script_deg"</span><span class="ex">:</span> <span class="st">"tasks/scripts/deg.doc.R"</span></span>
+<span id="cb12-8"><a href="usage.html#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="kw">}</span></span></code></pre></div>
+</div>
+<div id="outputs" class="section level2" number="3.2">
+<h2>
+<span class="header-section-number">3.2</span> Outputs<a class="anchor" aria-label="anchor" href="#outputs"><i class="fas fa-link"></i></a>
+</h2>
+<p>This workflow will produce a number of directories and files:</p>
+<ul>
+<li>
+<code>results/data_reference</code>
+<ul>
+<li>
+<code>Hisat2</code> index files.</li>
+</ul>
+</li>
+<li>
+<code>results/fastqc</code>
+<ul>
+<li>Contains a folder per sample with QC metrics.</li>
+</ul>
+</li>
+<li>
+<code>results/trimmomatic</code>
+<ul>
+<li>Contains all the four output files for each sample:
+<ul>
+<li>*_R1_paired.fq.gz - for paired forward reads</li>
+<li>*_R1_unpaired.fq.gz - for unpaired forward reads</li>
+<li>*_R2_paired.fq.gz - for paired reverse reads</li>
+<li>*_R2_unpaired.fq.gz - for unpaired reverse reads</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<code>results/hisat2</code>
+<ul>
+<li>Contains a BAM, index, and summary report for each sample.</li>
+</ul>
+</li>
+<li>
+<code>results/countDFeByg.xls</code>: contain the count reads values for all samples.</li>
+<li>
+<code>results/rpkmDFeByg.xls</code>: contain the RPKM values for all samples.</li>
+</ul>
+</div>
+</div>
+  <div class="chapter-nav">
+<div class="prev"><a href="sample-data.html"><span class="header-section-number">2</span> Sample Data</a></div>
+<div class="next"><a href="resources.html"><span class="header-section-number">4</span> Resources</a></div>
+</div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
+    <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
+      <ul class="nav navbar-nav">
+<li><a class="nav-link" href="#usage"><span class="header-section-number">3</span> Usage</a></li>
+<li><a class="nav-link" href="#inputs"><span class="header-section-number">3.1</span> Inputs</a></li>
+<li><a class="nav-link" href="#outputs"><span class="header-section-number">3.2</span> Outputs</a></li>
+</ul>
+
+      <div class="book-extra">
+        <ul class="list-unstyled">
+<li><a id="book-source" href="https://github.com/dcassol/wdl_rnaseq/blob/master/usage.Rmd">View source <i class="fab fa-github"></i></a></li>
+          <li><a id="book-edit" href="https://github.com/dcassol/wdl_rnaseq/edit/master/usage.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
+        </ul>
+</div>
+    </nav>
+</div>
+
+</div>
+</div> <!-- .container -->
+
+<footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>"<strong>RNA-seq Workflow</strong>" was written by Daniela Cassol. It was last built on 2022-01-04.</p>
+  </div>
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>This book was built by the <a class="text-light" href="https://bookdown.org">bookdown</a> R package.</p>
+  </div>
+
+</div></div>
+</footer>
+</body>
+</html>

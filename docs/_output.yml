@@ -8,7 +8,7 @@ bookdown::bs4_book:
     base: https://github.com/dcassol/wdl_rnaseq
     branch: main
     subdir: docs
-
+    
 bookdown::pdf_book:
   includes:
     in_header: preamble.tex

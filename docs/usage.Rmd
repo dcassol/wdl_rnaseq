@@ -20,24 +20,27 @@ java \
 
 ```
 
-Where `rnaseq.options.json` contains the following json:
+The `rnaseq.options.json` contains the following json:
 
 ```{bash, eval=FALSE}
 {
 	"final_workflow_outputs_dir": "results",
-  	"use_relative_output_paths": true
+  	"use_relative_output_paths": true,
+    "default_runtime_attributes": {
+        "docker": "dcassol/wdl_rnaseq"
+    }
 }
 ```
 
 The `rnaseq.options.json` will make sure all outputs will be copy to 
-`./results`.
+`./results`. 
 
 ## Inputs
 
 Inputs are provided through a `JSON` file. 
 
-Please note here that for each major step, we are providing sub directories for the 
-output file. Also, the sample data file is provide here:
+Please note here that for each major step, we are providing subdirectories for the 
+output file. Also, the sample data file is provided here:
 
 ```{bash, eval=FALSE}
 {
@@ -52,6 +55,7 @@ output file. Also, the sample data file is provide here:
 Trimmomatic inputs:
 
 ```{bash, eval=FALSE}
+{
   "rnaseq.trimmomatic_path": "trimmomatic",
   "rnaseq.seqType": "PE",
   "rnaseq.TRIM_threads": 2,
@@ -65,9 +69,10 @@ Trimmomatic inputs:
 }
 ```
 
-Hisat2 inputs: 
+`Hisat2` inputs: 
 
 ```{bash, eval=FALSE}
+{
   "rnaseq.reference": "data/tair10.fasta",
   "rnaseq.sortThreads": 2,
   "rnaseq.hisat2threads": 2,
@@ -77,14 +82,12 @@ Hisat2 inputs:
 Quantification inputs:
 
 ```{bash, eval=FALSE}
+{
   "rnaseq.gff": "data/tair10.gff",
   "rnaseq.dataSource": "TAIR",
   "rnaseq.db_path": "tair10.sqlite",
-  "rnaseq.outputcountDF": "countDFeByg.xls",
-  "rnaseq.outputrpkm": "rpkmDFeByg.xls", 
   "rnaseq.script_quant": "tasks/scripts/quantification.doc.R",
   "rnaseq.targets": "targetsPE.txt",
-  "rnaseq.DEGcounts": "DEGcounts.xls",
   "rnaseq.script_deg": "tasks/scripts/deg.doc.R"
 }
 ```
@@ -93,6 +96,22 @@ Quantification inputs:
 
 This workflow will produce a number of directories and files:
 
-- 
-- 
-- 
+- `results/data_reference`
+    - `Hisat2` index files.
+    
+- `results/fastqc`
+    - Contains a folder per sample with QC metrics.
+    
+- `results/trimmomatic`
+    - Contains all the four output files for each sample:
+        - *_R1_paired.fq.gz - for paired forward reads
+        - *_R1_unpaired.fq.gz - for unpaired forward reads
+        - *_R2_paired.fq.gz - for paired reverse reads
+        - *_R2_unpaired.fq.gz - for unpaired reverse reads
+
+- `results/hisat2`
+    - Contains a BAM, index, and summary report for each sample.
+
+- `results/countDFeByg.xls`: contain the count reads values for all samples.
+- `results/rpkmDFeByg.xls`: contain the RPKM values for all samples.
+

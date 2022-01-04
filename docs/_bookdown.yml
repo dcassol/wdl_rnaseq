@@ -5,6 +5,7 @@ language:
     chapter_name: "Chapter "
 rmd_files: ["index.Rmd", 
             "demo_data.Rmd",
+            "usage.Rmd",
             "resources.Rmd",
             "systemPipeRNAseq_docs.Rmd",
             "internalSettings.Rmd",
