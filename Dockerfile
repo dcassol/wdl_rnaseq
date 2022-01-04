@@ -31,9 +31,10 @@ RUN apt-get update &&\
 ENV PATH="${PATH}:/opt/"
 
 ## Update Bioconductor packages from devel version
-#RUN Rscript --vanilla -e "options(repos = c(CRAN = 'https://cran.r-project.org')); BiocManager::install(ask=FALSE)"
+RUN Rscript --vanilla -e "options(repos = c(CRAN = 'https://cran.r-project.org')); BiocManager::install(ask=FALSE)"
 
-## Install required Bioconductor packages from devel version
+## Install required Bioconductor packages 
+RUN Rscript -e 'BiocManager::install("tgirke/systemPipeR")'
 
 ## Metadata
 LABEL name="dcassol/wdl_rnaseq" \
