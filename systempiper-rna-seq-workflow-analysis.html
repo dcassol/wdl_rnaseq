@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Chapter 4 systemPipeR RNA-seq Workflow Analysis | RNA-seq Workflow</title>
+<meta name="author" content="Daniela Cassol">
+<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.2"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/header-attrs-2.9/header-attrs.js"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
+<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.2.5.1/tabs.js"></script><script src="libs/bs3compat-0.2.5.1/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
+<script src="libs/bs4_book-1.0.0/bs4_book.js"></script><script src="libs/htmlwidgets-1.5.3/htmlwidgets.js"></script><link href="libs/vizjs-2.1.2/plotwf.css" rel="stylesheet">
+<script src="libs/vizjs-2.1.2/viz.js"></script><script src="libs/vizjs-2.1.2/full.render.js"></script><script src="libs/dom_to_image-2.6/dom_to_image.js"></script><link id="plotwf_legend-1-attachment" rel="attachment" href="libs/plotwf_legend-1/plotwf_legend.svg">
+<script src="libs/plotwf-binding-2.1.12/plotwf.js"></script><script src="https://cdn.jsdelivr.net/autocomplete.js/0/autocomplete.jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/mark.js@8.11.1/dist/mark.min.js"></script><!-- CSS -->
+</head>
+<body data-spy="scroll" data-target="#toc">
+
+<div class="container-fluid">
+<div class="row">
+  <header class="col-sm-12 col-lg-3 sidebar sidebar-book"><a class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
+
+    <div class="d-flex align-items-start justify-content-between">
+      <h1>
+        <a href="index.html" title="">RNA-seq Workflow</a>
+      </h1>
+      <button class="btn btn-outline-primary d-lg-none ml-2 mt-1" type="button" data-toggle="collapse" data-target="#main-nav" aria-expanded="true" aria-controls="main-nav"><i class="fas fa-bars"></i><span class="sr-only">Show table of contents</span></button>
+    </div>
+
+    <div id="main-nav" class="collapse-lg">
+      <form role="search">
+        <input id="search" class="form-control" type="search" placeholder="Search" aria-label="Search">
+</form>
+
+      <nav aria-label="Table of contents"><h2>Table of contents</h2>
+        <ul class="book-toc list-unstyled">
+<li><a class="" href="index.html">Welcome</a></li>
+<li><a class="" href="directory-structure.html"><span class="header-section-number">1</span> Directory Structure</a></li>
+<li><a class="" href="sample-data.html"><span class="header-section-number">2</span> Sample Data</a></li>
+<li><a class="" href="resources.html"><span class="header-section-number">3</span> Resources</a></li>
+<li><a class="active" href="systempiper-rna-seq-workflow-analysis.html"><span class="header-section-number">4</span> systemPipeR RNA-seq Workflow Analysis</a></li>
+<li><a class="" href="settings.html"><span class="header-section-number">5</span> Settings</a></li>
+<li><a class="" href="references-1.html">References</a></li>
+</ul>
+
+        <div class="book-extra">
+          <p><a id="book-repo" href="https://github.com/dcassol/wdl_rnaseq">View book source <i class="fab fa-github"></i></a></p>
+        </div>
+      </nav>
+</div>
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="systempiper-rna-seq-workflow-analysis" class="section level1" number="4">
+<h1>
+<span class="header-section-number">4</span> <code>systemPipeR</code> RNA-seq Workflow Analysis<a class="anchor" aria-label="anchor" href="#systempiper-rna-seq-workflow-analysis"><i class="fas fa-link"></i></a>
+</h1>
+<div id="quick-start-1" class="section level2" number="4.1">
+<h2>
+<span class="header-section-number">4.1</span> Quick Start<a class="anchor" aria-label="anchor" href="#quick-start-1"><i class="fas fa-link"></i></a>
+</h2>
+<div id="create-the-workflow" class="section level3" number="4.1.1">
+<h3>
+<span class="header-section-number">4.1.1</span> Create the workflow<a class="anchor" aria-label="anchor" href="#create-the-workflow"><i class="fas fa-link"></i></a>
+</h3>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">sal</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/systemPipeR/man/SPRproject.html">SPRproject</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<pre><code>## Creating directory '/home/dcassol/danielac/LBL/wdl_rnaseq/docs/.SPRproject'
+## Creating file '/home/dcassol/danielac/LBL/wdl_rnaseq/docs/.SPRproject/SYSargsList.yml'</code></pre>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">sal</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/systemPipeR/man/importWF.html">importWF</a></span><span class="op">(</span><span class="va">sal</span>, <span class="st">"../SPR/SPrnaseq.Rmd"</span><span class="op">)</span></code></pre></div>
+<pre><code>## Reading Rmd fileNow importing step 'load_SPR' 
+## Now importing step 'trimming' 
+## Now importing step 'fastq_report' 
+## Now importing step 'hisat2_index' 
+## Now importing step 'hisat2_mapping' 
+## Now importing step 'align_stats' 
+## Now importing step 'create_db' 
+## Now importing step 'read_counting' 
+## Now importing step 'sample_tree' 
+## Now importing step 'run_edger' 
+## Now importing step 'custom_annot' 
+## Now importing step 'filter_degs' 
+## Now importing step 'venn_diagram' 
+## Now importing step 'get_go_annot' 
+## Now importing step 'go_enrich' 
+## Now importing step 'go_plot' 
+## Now importing step 'heatmap' 
+## Now importing step 'sessionInfo'</code></pre>
+</div>
+</div>
+<div id="running-workflow" class="section level2" number="4.2">
+<h2>
+<span class="header-section-number">4.2</span> Running workflow<a class="anchor" aria-label="anchor" href="#running-workflow"><i class="fas fa-link"></i></a>
+</h2>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">sal</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/systemPipeR/man/runWF.html">runWF</a></span><span class="op">(</span><span class="va">sal</span><span class="op">)</span></code></pre></div>
+<div id="visualize-workflow" class="section level3" number="4.2.1">
+<h3>
+<span class="header-section-number">4.2.1</span> Visualize workflow<a class="anchor" aria-label="anchor" href="#visualize-workflow"><i class="fas fa-link"></i></a>
+</h3>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/systemPipeR/man/plotWF.html">plotWF</a></span><span class="op">(</span><span class="va">sal</span><span class="op">)</span></code></pre></div>
+<div id="htmlwidget-cecbb379583e25424e41" style="width:672px;height:480px;" class="plotwf html-widget"></div>
+<script type="application/json" data-for="htmlwidget-cecbb379583e25424e41">{"x":{"dot":"digraph {\n    node[fontsize=20];\n    subgraph {\n        load_SPR -> hisat2_index -> hisat2_mapping -> create_db -> read_counting -> run_edger -> custom_annot -> filter_degs -> get_go_annot -> go_enrich -> heatmap -> sessionInfo\n   }\n    load_SPR -> trimming\n    trimming -> hisat2_mapping\n    hisat2_mapping -> align_stats\n    read_counting -> sample_tree\n    filter_degs -> venn_diagram\n    go_enrich -> go_plot\n    trimming -> fastq_report\n    load_SPR[fillcolor=\"#d3d6eb\" style=\"filled, \"label=<<b><font color=\"black\">load_SPR<\/font><br><\/br><font color=\"#5cb85c\">0<\/font>/<font color=\"#f0ad4e\">0<\/font>/<font color=\"#d9534f\">0<\/font>/<font color=\"blue\">1<\/font><\/b>; <font color=\"black\">0s<\/font>>  tooltip=\"step load_SPR: 0 samples passed; 0 samples have warnings; 0 samples have errors; 1 samples in total; Start time: 2022-01-04 02:38:48; End time: 2022-01-04 02:38:48; Duration: 00:00:00\"]\n    trimming[fillcolor=\"#d3d6eb\" style=\"filled, rounded\" label=<<b><font color=\"black\">trimming<\/font><br><\/br><font color=\"#5cb85c\">0<\/font>/<font color=\"#f0ad4e\">0<\/font>/<font color=\"#d9534f\">0<\/font>/<font color=\"blue\">72<\/font><\/b>; <font color=\"black\">0s<\/font>> , shape=\"box\"  tooltip=\"step trimming: 0 samples passed; 0 samples have warnings; 0 samples have errors; 72 samples in total; Start time: 2022-01-04 02:38:48; End time: 2022-01-04 02:38:48; Duration: 00:00:00\"]\n    fastq_report[fillcolor=\"#d3d6eb\" style=\"filled, \"label=<<b><font color=\"black\">fastq_report<\/font><br><\/br><font color=\"#5cb85c\">0<\/font>/<font color=\"#f0ad4e\">0<\/font>/<font color=\"#d9534f\">0<\/font>/<font color=\"blue\">1<\/font><\/b>; <font color=\"black\">0s<\/font>>  tooltip=\"step fastq_report: 0 samples passed; 0 samples have warnings; 0 samples have errors; 1 samples in total; Start time: 2022-01-04 02:38:48; End time: 2022-01-04 02:38:48; Duration: 00:00:00\"]\n    hisat2_index[fillcolor=\"#d3d6eb\" style=\"filled, rounded\" label=<<b><font color=\"black\">hisat2_index<\/font><br><\/br><font color=\"#5cb85c\">0<\/font>/<font color=\"#f0ad4e\">0<\/font>/<font color=\"#d9534f\">0<\/font>/<font color=\"blue\">8<\/font><\/b>; <font color=\"black\">0s<\/font>> , shape=\"box\"  tooltip=\"step hisat2_index: 0 samples passed; 0 samples have warnings; 0 samples have errors; 8 samples in total; Start time: 2022-01-04 02:38:48; End time: 2022-01-04 02:38:48; Duration: 00:00:00\"]\n    hisat2_mapping[fillcolor=\"#d3d6eb\" style=\"filled, rounded\" label=<<b><font color=\"black\">hisat2_mapping<\/font><br><\/br><font color=\"#5cb85c\">0<\/font>/<font color=\"#f0ad4e\">0<\/font>/<font color=\"#d9534f\">0<\/font>/<font color=\"blue\">72<\/font><\/b>; <font color=\"black\">0s<\/font>> , shape=\"box\"  tooltip=\"step hisat2_mapping: 0 samples passed; 0 samples have warnings; 0 samples have errors; 72 samples in total; Start time: 2022-01-04 02:38:48; End time: 2022-01-04 02:38:48; Duration: 00:00:00\"]\n    align_stats[fillcolor=\"#d3d6eb\" style=\"filled, \"label=<<b><font color=\"black\">align_stats<\/font><br><\/br><font color=\"#5cb85c\">0<\/font>/<font color=\"#f0ad4e\">0<\/font>/<font color=\"#d9534f\">0<\/font>/<font color=\"blue\">1<\/font><\/b>; <font color=\"black\">0s<\/font>>  tooltip=\"step align_stats: 0 samples passed; 0 samples have warnings; 0 samples have errors; 1 samples in total; Start time: 2022-01-04 02:38:48; End time: 2022-01-04 02:38:48; Duration: 00:00:00\"]\n    create_db[fillcolor=\"#d3d6eb\" style=\"filled, \"label=<<b><font color=\"black\">create_db<\/font><br><\/br><font color=\"#5cb85c\">0<\/font>/<font color=\"#f0ad4e\">0<\/font>/<font color=\"#d9534f\">0<\/font>/<font color=\"blue\">1<\/font><\/b>; <font color=\"black\">0s<\/font>>  tooltip=\"step create_db: 0 samples passed; 0 samples have warnings; 0 samples have errors; 1 samples in total; Start time: 2022-01-04 02:38:48; End time: 2022-01-04 02:38:48; Duration: 00:00:00\"]\n    read_counting[fillcolor=\"#d3d6eb\" style=\"filled, \"label=<<b><font color=\"black\">read_counting<\/font><br><\/br><font color=\"#5cb85c\">0<\/font>/<font color=\"#f0ad4e\">0<\/font>/<font color=\"#d9534f\">0<\/font>/<font color=\"blue\">1<\/font><\/b>; <font color=\"black\">0s<\/font>>  tooltip=\"step read_counting: 0 samples passed; 0 samples have warnings; 0 samples have errors; 1 samples in total; Start time: 2022-01-04 02:38:48; End time: 2022-01-04 02:38:48; Duration: 00:00:00\"]\n    sample_tree[fillcolor=\"#d3d6eb\" style=\"filled, \"label=<<b><font color=\"black\">sample_tree<\/font><br><\/br><font color=\"#5cb85c\">0<\/font>/<font color=\"#f0ad4e\">0<\/font>/<font color=\"#d9534f\">0<\/font>/<font color=\"blue\">1<\/font><\/b>; <font color=\"black\">0s<\/font>>  tooltip=\"step sample_tree: 0 samples passed; 0 samples have warnings; 0 samples have errors; 1 samples in total; Start time: 2022-01-04 02:38:48; End time: 2022-01-04 02:38:48; Duration: 00:00:00\"]\n    run_edger[fillcolor=\"#d3d6eb\" style=\"filled, \"label=<<b><font color=\"black\">run_edger<\/font><br><\/br><font color=\"#5cb85c\">0<\/font>/<font color=\"#f0ad4e\">0<\/font>/<font color=\"#d9534f\">0<\/font>/<font color=\"blue\">1<\/font><\/b>; <font color=\"black\">0s<\/font>>  tooltip=\"step run_edger: 0 samples passed; 0 samples have warnings; 0 samples have errors; 1 samples in total; Start time: 2022-01-04 02:38:48; End time: 2022-01-04 02:38:48; Duration: 00:00:00\"]\n    custom_annot[fillcolor=\"#d3d6eb\" style=\"filled, \"label=<<b><font color=\"black\">custom_annot<\/font><br><\/br><font color=\"#5cb85c\">0<\/font>/<font color=\"#f0ad4e\">0<\/font>/<font color=\"#d9534f\">0<\/font>/<font color=\"blue\">1<\/font><\/b>; <font color=\"black\">0s<\/font>>  tooltip=\"step custom_annot: 0 samples passed; 0 samples have warnings; 0 samples have errors; 1 samples in total; Start time: 2022-01-04 02:38:48; End time: 2022-01-04 02:38:48; Duration: 00:00:00\"]\n    filter_degs[fillcolor=\"#d3d6eb\" style=\"filled, \"label=<<b><font color=\"black\">filter_degs<\/font><br><\/br><font color=\"#5cb85c\">0<\/font>/<font color=\"#f0ad4e\">0<\/font>/<font color=\"#d9534f\">0<\/font>/<font color=\"blue\">1<\/font><\/b>; <font color=\"black\">0s<\/font>>  tooltip=\"step filter_degs: 0 samples passed; 0 samples have warnings; 0 samples have errors; 1 samples in total; Start time: 2022-01-04 02:38:48; End time: 2022-01-04 02:38:48; Duration: 00:00:00\"]\n    venn_diagram[fillcolor=\"#d3d6eb\" style=\"filled, \"label=<<b><font color=\"black\">venn_diagram<\/font><br><\/br><font color=\"#5cb85c\">0<\/font>/<font color=\"#f0ad4e\">0<\/font>/<font color=\"#d9534f\">0<\/font>/<font color=\"blue\">1<\/font><\/b>; <font color=\"black\">0s<\/font>>  tooltip=\"step venn_diagram: 0 samples passed; 0 samples have warnings; 0 samples have errors; 1 samples in total; Start time: 2022-01-04 02:38:48; End time: 2022-01-04 02:38:48; Duration: 00:00:00\"]\n    get_go_annot[fillcolor=\"#d3d6eb\" style=\"filled, \"label=<<b><font color=\"black\">get_go_annot<\/font><br><\/br><font color=\"#5cb85c\">0<\/font>/<font color=\"#f0ad4e\">0<\/font>/<font color=\"#d9534f\">0<\/font>/<font color=\"blue\">1<\/font><\/b>; <font color=\"black\">0s<\/font>>  tooltip=\"step get_go_annot: 0 samples passed; 0 samples have warnings; 0 samples have errors; 1 samples in total; Start time: 2022-01-04 02:38:48; End time: 2022-01-04 02:38:48; Duration: 00:00:00\"]\n    go_enrich[fillcolor=\"#d3d6eb\" style=\"filled, \"label=<<b><font color=\"black\">go_enrich<\/font><br><\/br><font color=\"#5cb85c\">0<\/font>/<font color=\"#f0ad4e\">0<\/font>/<font color=\"#d9534f\">0<\/font>/<font color=\"blue\">1<\/font><\/b>; <font color=\"black\">0s<\/font>>  tooltip=\"step go_enrich: 0 samples passed; 0 samples have warnings; 0 samples have errors; 1 samples in total; Start time: 2022-01-04 02:38:48; End time: 2022-01-04 02:38:48; Duration: 00:00:00\"]\n    go_plot[fillcolor=\"#d3d6eb\" style=\"filled, \"label=<<b><font color=\"black\">go_plot<\/font><br><\/br><font color=\"#5cb85c\">0<\/font>/<font color=\"#f0ad4e\">0<\/font>/<font color=\"#d9534f\">0<\/font>/<font color=\"blue\">1<\/font><\/b>; <font color=\"black\">0s<\/font>>  tooltip=\"step go_plot: 0 samples passed; 0 samples have warnings; 0 samples have errors; 1 samples in total; Start time: 2022-01-04 02:38:48; End time: 2022-01-04 02:38:48; Duration: 00:00:00\"]\n    heatmap[fillcolor=\"#d3d6eb\" style=\"filled, \"label=<<b><font color=\"black\">heatmap<\/font><br><\/br><font color=\"#5cb85c\">0<\/font>/<font color=\"#f0ad4e\">0<\/font>/<font color=\"#d9534f\">0<\/font>/<font color=\"blue\">1<\/font><\/b>; <font color=\"black\">0s<\/font>>  tooltip=\"step heatmap: 0 samples passed; 0 samples have warnings; 0 samples have errors; 1 samples in total; Start time: 2022-01-04 02:38:48; End time: 2022-01-04 02:38:48; Duration: 00:00:00\"]\n    sessionInfo[fillcolor=\"#d3d6eb\" style=\"filled, \"label=<<b><font color=\"black\">sessionInfo<\/font><br><\/br><font color=\"#5cb85c\">0<\/font>/<font color=\"#f0ad4e\">0<\/font>/<font color=\"#d9534f\">0<\/font>/<font color=\"blue\">1<\/font><\/b>; <font color=\"black\">0s<\/font>>  tooltip=\"step sessionInfo: 0 samples passed; 0 samples have warnings; 0 samples have errors; 1 samples in total; Start time: 2022-01-04 02:38:48; End time: 2022-01-04 02:38:48; Duration: 00:00:00\"]\n        subgraph cluster_legend {\n        rankdir=TB;\n        color=\"#eeeeee\";\n        style=filled;\n        ranksep =1;\n        label=\"Legends\";\n        fontsize = 30;\n        node [style=filled, fontsize=10];\n        legend_img-> step_state[color=\"#eeeeee\"];\n\n        legend_img[shape=none, image=\"plotwf_legend-src.png\", label = \" \", height=1, width=3, style=\"\"];\n\n        step_state[style=\"filled\", shape=\"box\" color=white, label =<\n            <table>\n            <tr><td><b>Step Colors<\/b><\/td><\/tr>\n            <tr><td><font color=\"black\">Pending steps<\/font>; <font color=\"#5cb85c\">Successful steps<\/font>; <font color=\"#d9534f\">Failed steps<\/font><\/td><\/tr>\n            <tr><td><b>Targets Files / Code Chunk <\/b><\/td><\/tr><tr><td><font color=\"#5cb85c\">0 (pass) <\/font> | <font color=\"#f0ad4e\">0 (warning) <\/font> | <font color=\"#d9534f\">0 (error) <\/font> | <font color=\"blue\">0 (total)<\/font>; Duration<\/td><\/tr><\/table>\n            >];\n\n    }\n\n}\n","plotid":"sprwf-34826751","responsive":true,"width":null,"height":null,"plot_method":"renderSVGElement","rmd":true,"msg":"","plot_ctr":true,"pan_zoom":false,"legend_uri":"data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPCEtLSBEbyBub3QgZWRpdCB0aGlzIGZpbGUgd2l0aCBlZGl0b3JzIG90aGVyIHRoYW4gZGlhZ3JhbXMubmV0IC0tPgo8IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHZlcnNpb249IjEuMSIgd2lkdGg9IjQ5NnB4IiBoZWlnaHQ9IjI3OHB4IiB2aWV3Qm94PSItMC41IC0wLjUgNDk2IDI3OCIgY29udGVudD0iJmx0O214ZmlsZSBob3N0PSZxdW90O2FwcC5kaWFncmFtcy5uZXQmcXVvdDsgbW9kaWZpZWQ9JnF1b3Q7MjAyMS0xMS0yNFQyMDozOTo0NC45MjNaJnF1b3Q7IGFnZW50PSZxdW90OzUuMCAoWDExOyBMaW51eCB4ODZfNjQpIEFwcGxlV2ViS2l0LzUzNy4zNiAoS0hUTUwsIGxpa2UgR2Vja28pIENocm9tZS85Ni4wLjQ2NjQuNDUgU2FmYXJpLzUzNy4zNiZxdW90OyB2ZXJzaW9uPSZxdW90OzE1LjguMyZxdW90OyBldGFnPSZxdW90O1RfZEV4bkw3U0xYMmJ1WDhQYVgzJnF1b3Q7IHR5cGU9JnF1b3Q7Z29vZ2xlJnF1b3Q7Jmd0OyZsdDtkaWFncmFtIGlkPSZxdW90O1Z3OVZWaUdzeC1zTF9OaktlN0pQJnF1b3Q7Jmd0OzdWcmJjdUk0RVAwYUhwT3lKZDk0REFSbVhtWjNLMnpWUGl0WUdGVmt5V1BMZ2N6WHIyVEwrQ0lEM3NHUVRSVWtsZGd0cVMyZDAycDF0NW5BZWJ6L2xxSmsrNE9IbUU2QUZlNG44SGtDZ0EwQW1LaGZLL3pRRXN2eFMwbVVrbERMYXNHSy9NSlZSeTNOU1lpelZrZkJPUlVrYVF2WG5ERzhGaTBaU2xPK2EzZmJjTnArYW9JaWJBaFdhMFJONlQ4a0ZOdFNPcldzV3Y0ZGsyaGJQZG1yV21KVWRkYUNiSXRDdm11STRHSUM1eW5ub3J5SzkzTk1GWG9WTHVXNDVaSFd3OFJTek1TUUFacUpkMFJ6dlRZOUwvRlJMVFpLZVo1TTRFeitZeUZXNHl4NWQ1aTR1dEZLY0Nyd3ZvOEE5Rm9wczh3SjJvZGxTNFBCUE1ZaS9aQmRLa1dCSHFKdEJVQjl2NnVCQjQ1YnlyWk4wS0duQ2Rka1J3ZmROUjd5UWtQU0R3ODhEMDhibHQyV0NMeEswRnExN3FUNVM5bFd4Rkwvc3kwdk40VFNPYWM4TGNiQzBNVkI2Q2cwUmNyZmNOWENPSlBEWnhGRldkWUhkL2FHeFhwN0R2c214cUFmWTQycEE0ZEI2b3lBcUhOZFJKZkxSZkM4T0lib1ZWRU1wZ05SOUM5SDBiMHVpb3ZsRWl6bnQwWHhMR3p3Y3RpOHNXSGpUT2pUS1RCUjNManFSOG9SSlJHVE1vbzM0aGlvU2xWamJQbVJjaTRmVG9ReXNXQkVoSDNyU2c3VE54RE9PSldOWFpqbDlFVWJ5d3FrdFZ3R2xpak0xQ0tKUEhPZmRFTk13bEFObjZVNEk3LzBrYUl3U1RoaG9waXpPNXU0ejBwWExuaFc4bUlmQmJ4QlZvT0RKcDN5ZG9saVFoWDZmNU5ZUmh6QStnUHY1TjhYSGlNMmxJN1RCeHp3L1VlM2ZjUUIwNVBBSHNLcXcvUVN2Z0tEcnhCbFczd243RGhoMEhVTndnS0RNT2RLaEUwTnduNGdKdVBOV00zK3E1Rm0yN2ZiWm03dzZIZG9jODFRc3M4eGprRmJsYmswZUp2ek9Na0Z2cE4yWXFzNXhsYnI0Y3k3Rm1kMlQ3amcwZUlJVCtRU202eDVQM09Wc2hXNFBKVDRQc2tPUWJLdjIrUlZwUDdMcDhoRUZWZTY1RFJLZFdXcllROVY5LzhVeElWNGczSXFicmU5dktETGxPOFpUTG4yWTA5a0IwWUlpRzB6a1gyNTc2d1RmQVYyaHk5bzlXU0IxOXBaWmw0dHZhRmNYUGhBQ2J1N3hGTXVFWFpkSXJSc2c3amdXc1NaNlh1cTZqc3NvaVpyZFNwbFgrSzhQaUhBQTBOOEdlajFaZTRJSUEvSTdqRUxuMVFoc3piSEJwYWRTbDFoejFXZEVoNHd3cUZSNUR5TFVIUDlQU1pXeVZKTWtTRHZiZlY5a09nbi9LWDJaUE13bVQ2Q0RnUGRxa25HODNTTjlVRFFLSEIyZEVGZ0czRmZWNWRBYVlTRm9hdmc2YkQ0WWRRTnFEQmNSSjNPenNyTy8zY2VaYWJVQWQ1N0RLeHAvWEYvajFQSE1sTG1NNXBIWk5pc2NNZ0VMRVNDNjAxK1A3ZU9CSWhkcHdvZDA2bGVMWlEzNnh4L0pvSndodWlkdEZNbm9UV0F0RDRQTWdwcFpxMWpsUHhMd1RzMCticm83UTRNUGZ4NnF1QjdpK3BpKy9VWkJHYVU3L2k5a2N3SURBS3o2akVLZzR6TGxsdlJ1Q3crbjB1akdaTGVtRWl6RlBLU00wWllORkhxU3hKZTB5R0UycFprdEtDeVErb0taNW4weUYvSUgrczVkdDRFMmRiTnpNSU9nbllZQkwzS0FzNzRaemlHVVpnMWw4b1VRdkora1MyYzlSS3ZhUDBXRmJ2NllWMHlvL1NKRkxHc2dtK21mTVRBNXgyTStZZzdPWWlMaGVreCtHZE8wcTlXZVA5OG0vWGJOZ3VCR1ZIMFZlRkhzVml6N3JRU09CblBoODJMcjJ6Y3JXRzROVXhoMjRNRlpqR3I3MVhhYjFpRHZLMi9WMVZtZnZYWDArRGlYdz09Jmx0Oy9kaWFncmFtJmd0OyZsdDsvbXhmaWxlJmd0OyI+PGRlZnMvPjxnPjxyZWN0IHg9IjQiIHk9IjkwIiB3aWR0aD0iNDkwIiBoZWlnaHQ9IjkyIiBmaWxsPSIjZDVlOGQ0IiBzdHJva2U9Im5vbmUiIHBvaW50ZXItZXZlbnRzPSJub25lIi8+PHJlY3QgeD0iNCIgeT0iMTgyIiB3aWR0aD0iNDkwIiBoZWlnaHQ9Ijk0IiBmaWxsPSIjZmZlOGRlIiBzdHJva2U9Im5vbmUiIHBvaW50ZXItZXZlbnRzPSJub25lIi8+PHJlY3QgeD0iNCIgeT0iNCIgd2lkdGg9IjQ5MCIgaGVpZ2h0PSI4NiIgZmlsbD0iI2VmZjJmYyIgc3Ryb2tlPSJub25lIiBwb2ludGVyLWV2ZW50cz0ibm9uZSIvPjxyZWN0IHg9IjQiIHk9IjQiIHdpZHRoPSIxNDAiIGhlaWdodD0iMjcyIiBmaWxsLW9wYWNpdHk9IjAuOCIgZmlsbD0iI2Y1ZjVmNSIgc3Ryb2tlPSJub25lIiBwb2ludGVyLWV2ZW50cz0ibm9uZSIvPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKC0wLjUgLTAuNSlzY2FsZSgyKSI+PHN3aXRjaD48Zm9yZWlnbk9iamVjdCBwb2ludGVyLWV2ZW50cz0ibm9uZSIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgcmVxdWlyZWRGZWF0dXJlcz0iaHR0cDovL3d3dy53My5vcmcvVFIvU1ZHMTEvZmVhdHVyZSNFeHRlbnNpYmlsaXR5IiBzdHlsZT0ib3ZlcmZsb3c6IHZpc2libGU7IHRleHQtYWxpZ246IGxlZnQ7Ij48ZGl2IHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hodG1sIiBzdHlsZT0iZGlzcGxheTogZmxleDsgYWxpZ24taXRlbXM6IHVuc2FmZSBjZW50ZXI7IGp1c3RpZnktY29udGVudDogdW5zYWZlIGNlbnRlcjsgd2lkdGg6IDFweDsgaGVpZ2h0OiAxcHg7IHBhZGRpbmctdG9wOiAxMXB4OyBtYXJnaW4tbGVmdDogMTE1cHg7Ij48ZGl2IGRhdGEtZHJhd2lvLWNvbG9ycz0iY29sb3I6IHJnYmEoMCwgMCwgMCwgMSk7ICIgc3R5bGU9ImJveC1zaXppbmc6IGJvcmRlci1ib3g7IGZvbnQtc2l6ZTogMHB4OyB0ZXh0LWFsaWduOiBjZW50ZXI7Ij48ZGl2IHN0eWxlPSJkaXNwbGF5OiBpbmxpbmUtYmxvY2s7IGZvbnQtc2l6ZTogOHB4OyBmb250LWZhbWlseTogJnF1b3Q7VGltZXMgTmV3IFJvbWFuJnF1b3Q7OyBjb2xvcjogcmdiKDAsIDAsIDApOyBsaW5lLWhlaWdodDogMS4yOyBwb2ludGVyLWV2ZW50czogbm9uZTsgd2hpdGUtc3BhY2U6IG5vd3JhcDsiPnNvbGlkPC9kaXY+PC9kaXY+PC9kaXY+PC9mb3JlaWduT2JqZWN0Pjx0ZXh0IHg9IjExNSIgeT0iMTMiIGZpbGw9InJnYmEoMCwgMCwgMCwgMSkiIGZvbnQtZmFtaWx5PSJUaW1lcyBOZXcgUm9tYW4iIGZvbnQtc2l6ZT0iOHB4IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5zb2xpZDwvdGV4dD48L3N3aXRjaD48L2c+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTAuNSAtMC41KXNjYWxlKDIpIj48c3dpdGNoPjxmb3JlaWduT2JqZWN0IHBvaW50ZXItZXZlbnRzPSJub25lIiB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiByZXF1aXJlZEZlYXR1cmVzPSJodHRwOi8vd3d3LnczLm9yZy9UUi9TVkcxMS9mZWF0dXJlI0V4dGVuc2liaWxpdHkiIHN0eWxlPSJvdmVyZmxvdzogdmlzaWJsZTsgdGV4dC1hbGlnbjogbGVmdDsiPjxkaXYgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGh0bWwiIHN0eWxlPSJkaXNwbGF5OiBmbGV4OyBhbGlnbi1pdGVtczogdW5zYWZlIGNlbnRlcjsganVzdGlmeS1jb250ZW50OiB1bnNhZmUgY2VudGVyOyB3aWR0aDogMXB4OyBoZWlnaHQ6IDFweDsgcGFkZGluZy10b3A6IDEwcHg7IG1hcmdpbi1sZWZ0OiAxOThweDsiPjxkaXYgZGF0YS1kcmF3aW8tY29sb3JzPSJjb2xvcjogcmdiYSgwLCAwLCAwLCAxKTsgIiBzdHlsZT0iYm94LXNpemluZzogYm9yZGVyLWJveDsgZm9udC1zaXplOiAwcHg7IHRleHQtYWxpZ246IGNlbnRlcjsiPjxkaXYgc3R5bGU9ImRpc3BsYXk6IGlubGluZS1ibG9jazsgZm9udC1zaXplOiA4cHg7IGZvbnQtZmFtaWx5OiAmcXVvdDtUaW1lcyBOZXcgUm9tYW4mcXVvdDs7IGNvbG9yOiByZ2IoMCwgMCwgMCk7IGxpbmUtaGVpZ2h0OiAxLjI7IHBvaW50ZXItZXZlbnRzOiBub25lOyB3aGl0ZS1zcGFjZTogbm93cmFwOyI+ZGFzaGVkPC9kaXY+PC9kaXY+PC9kaXY+PC9mb3JlaWduT2JqZWN0Pjx0ZXh0IHg9IjE5OCIgeT0iMTIiIGZpbGw9InJnYmEoMCwgMCwgMCwgMSkiIGZvbnQtZmFtaWx5PSJUaW1lcyBOZXcgUm9tYW4iIGZvbnQtc2l6ZT0iOHB4IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5kYXNoZWQ8L3RleHQ+PC9zd2l0Y2g+PC9nPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKC0wLjUgLTAuNSlzY2FsZSgyKSI+PHN3aXRjaD48Zm9yZWlnbk9iamVjdCBwb2ludGVyLWV2ZW50cz0ibm9uZSIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgcmVxdWlyZWRGZWF0dXJlcz0iaHR0cDovL3d3dy53My5vcmcvVFIvU1ZHMTEvZmVhdHVyZSNFeHRlbnNpYmlsaXR5IiBzdHlsZT0ib3ZlcmZsb3c6IHZpc2libGU7IHRleHQtYWxpZ246IGxlZnQ7Ij48ZGl2IHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hodG1sIiBzdHlsZT0iZGlzcGxheTogZmxleDsgYWxpZ24taXRlbXM6IHVuc2FmZSBjZW50ZXI7IGp1c3RpZnktY29udGVudDogdW5zYWZlIGNlbnRlcjsgd2lkdGg6IDFweDsgaGVpZ2h0OiAxcHg7IHBhZGRpbmctdG9wOiAzMnB4OyBtYXJnaW4tbGVmdDogMTE2cHg7Ij48ZGl2IGRhdGEtZHJhd2lvLWNvbG9ycz0iY29sb3I6IHJnYmEoMCwgMCwgMCwgMSk7ICIgc3R5bGU9ImJveC1zaXppbmc6IGJvcmRlci1ib3g7IGZvbnQtc2l6ZTogMHB4OyB0ZXh0LWFsaWduOiBjZW50ZXI7Ij48ZGl2IHN0eWxlPSJkaXNwbGF5OiBpbmxpbmUtYmxvY2s7IGZvbnQtc2l6ZTogMTFweDsgZm9udC1mYW1pbHk6ICZxdW90O1RpbWVzIE5ldyBSb21hbiZxdW90OzsgY29sb3I6IHJnYigwLCAwLCAwKTsgbGluZS1oZWlnaHQ6IDEuMjsgcG9pbnRlci1ldmVudHM6IG5vbmU7IHdoaXRlLXNwYWNlOiBub3dyYXA7Ij5NYW5hZ2VtZW50PC9kaXY+PC9kaXY+PC9kaXY+PC9mb3JlaWduT2JqZWN0Pjx0ZXh0IHg9IjExNiIgeT0iMzUiIGZpbGw9InJnYmEoMCwgMCwgMCwgMSkiIGZvbnQtZmFtaWx5PSJUaW1lcyBOZXcgUm9tYW4iIGZvbnQtc2l6ZT0iMTFweCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+TWFuYWdlbWVudDwvdGV4dD48L3N3aXRjaD48L2c+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTAuNSAtMC41KXNjYWxlKDIpIj48c3dpdGNoPjxmb3JlaWduT2JqZWN0IHBvaW50ZXItZXZlbnRzPSJub25lIiB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiByZXF1aXJlZEZlYXR1cmVzPSJodHRwOi8vd3d3LnczLm9yZy9UUi9TVkcxMS9mZWF0dXJlI0V4dGVuc2liaWxpdHkiIHN0eWxlPSJvdmVyZmxvdzogdmlzaWJsZTsgdGV4dC1hbGlnbjogbGVmdDsiPjxkaXYgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGh0bWwiIHN0eWxlPSJkaXNwbGF5OiBmbGV4OyBhbGlnbi1pdGVtczogdW5zYWZlIGNlbnRlcjsganVzdGlmeS1jb250ZW50OiB1bnNhZmUgY2VudGVyOyB3aWR0aDogMXB4OyBoZWlnaHQ6IDFweDsgcGFkZGluZy10b3A6IDMycHg7IG1hcmdpbi1sZWZ0OiAxOThweDsiPjxkaXYgZGF0YS1kcmF3aW8tY29sb3JzPSJjb2xvcjogcmdiYSgwLCAwLCAwLCAxKTsgIiBzdHlsZT0iYm94LXNpemluZzogYm9yZGVyLWJveDsgZm9udC1zaXplOiAwcHg7IHRleHQtYWxpZ246IGNlbnRlcjsiPjxkaXYgc3R5bGU9ImRpc3BsYXk6IGlubGluZS1ibG9jazsgZm9udC1zaXplOiAxMXB4OyBmb250LWZhbWlseTogJnF1b3Q7VGltZXMgTmV3IFJvbWFuJnF1b3Q7OyBjb2xvcjogcmdiKDAsIDAsIDApOyBsaW5lLWhlaWdodDogMS4yOyBwb2ludGVyLWV2ZW50czogbm9uZTsgd2hpdGUtc3BhY2U6IG5vd3JhcDsiPkNvbXB1dGU8L2Rpdj48L2Rpdj48L2Rpdj48L2ZvcmVpZ25PYmplY3Q+PHRleHQgeD0iMTk4IiB5PSIzNSIgZmlsbD0icmdiYSgwLCAwLCAwLCAxKSIgZm9udC1mYW1pbHk9IlRpbWVzIE5ldyBSb21hbiIgZm9udC1zaXplPSIxMXB4IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5Db21wdXRlPC90ZXh0Pjwvc3dpdGNoPjwvZz48ZWxsaXBzZSBjeD0iMjMyLjUiIGN5PSIxMjMiIHJ4PSI1MS41IiByeT0iMjciIGZpbGw9InJnYmEoMjU1LCAyNTUsIDI1NSwgMSkiIHN0cm9rZT0icmdiYSgwLCAwLCAwLCAxKSIgc3Ryb2tlLXdpZHRoPSIyIiBwb2ludGVyLWV2ZW50cz0ibm9uZSIvPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKC0wLjUgLTAuNSlzY2FsZSgyKSI+PHN3aXRjaD48Zm9yZWlnbk9iamVjdCBwb2ludGVyLWV2ZW50cz0ibm9uZSIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgcmVxdWlyZWRGZWF0dXJlcz0iaHR0cDovL3d3dy53My5vcmcvVFIvU1ZHMTEvZmVhdHVyZSNFeHRlbnNpYmlsaXR5IiBzdHlsZT0ib3ZlcmZsb3c6IHZpc2libGU7IHRleHQtYWxpZ246IGxlZnQ7Ij48ZGl2IHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hodG1sIiBzdHlsZT0iZGlzcGxheTogZmxleDsgYWxpZ24taXRlbXM6IHVuc2FmZSBjZW50ZXI7IGp1c3RpZnktY29udGVudDogdW5zYWZlIGNlbnRlcjsgd2lkdGg6IDUwcHg7IGhlaWdodDogMXB4OyBwYWRkaW5nLXRvcDogNjJweDsgbWFyZ2luLWxlZnQ6IDkycHg7Ij48ZGl2IGRhdGEtZHJhd2lvLWNvbG9ycz0iY29sb3I6IHJnYmEoMCwgMCwgMCwgMSk7ICIgc3R5bGU9ImJveC1zaXppbmc6IGJvcmRlci1ib3g7IGZvbnQtc2l6ZTogMHB4OyB0ZXh0LWFsaWduOiBjZW50ZXI7Ij48ZGl2IHN0eWxlPSJkaXNwbGF5OiBpbmxpbmUtYmxvY2s7IGZvbnQtc2l6ZTogMTJweDsgZm9udC1mYW1pbHk6ICZxdW90O1RpbWVzIE5ldyBSb21hbiZxdW90OzsgY29sb3I6IHJnYigwLCAwLCAwKTsgbGluZS1oZWlnaHQ6IDEuMjsgcG9pbnRlci1ldmVudHM6IG5vbmU7IHdoaXRlLXNwYWNlOiBub3JtYWw7IG92ZXJmbG93LXdyYXA6IG5vcm1hbDsiPjxzcGFuIHN0eWxlPSJmb250LXNpemU6IDhweCI+ZWxsaXBzZTwvc3Bhbj48L2Rpdj48L2Rpdj48L2Rpdj48L2ZvcmVpZ25PYmplY3Q+PHRleHQgeD0iMTE2IiB5PSI2NSIgZmlsbD0icmdiYSgwLCAwLCAwLCAxKSIgZm9udC1mYW1pbHk9IlRpbWVzIE5ldyBSb21hbiIgZm9udC1zaXplPSIxMnB4IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5lbGxpcHNlPC90ZXh0Pjwvc3dpdGNoPjwvZz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtMC41IC0wLjUpc2NhbGUoMikiPjxzd2l0Y2g+PGZvcmVpZ25PYmplY3QgcG9pbnRlci1ldmVudHM9Im5vbmUiIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIHJlcXVpcmVkRmVhdHVyZXM9Imh0dHA6Ly93d3cudzMub3JnL1RSL1NWRzExL2ZlYXR1cmUjRXh0ZW5zaWJpbGl0eSIgc3R5bGU9Im92ZXJmbG93OiB2aXNpYmxlOyB0ZXh0LWFsaWduOiBsZWZ0OyI+PGRpdiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94aHRtbCIgc3R5bGU9ImRpc3BsYXk6IGZsZXg7IGFsaWduLWl0ZW1zOiB1bnNhZmUgY2VudGVyOyBqdXN0aWZ5LWNvbnRlbnQ6IHVuc2FmZSBjZW50ZXI7IHdpZHRoOiAxcHg7IGhlaWdodDogMXB4OyBwYWRkaW5nLXRvcDogODVweDsgbWFyZ2luLWxlZnQ6IDExNHB4OyI+PGRpdiBkYXRhLWRyYXdpby1jb2xvcnM9ImNvbG9yOiByZ2JhKDAsIDAsIDAsIDEpOyAiIHN0eWxlPSJib3gtc2l6aW5nOiBib3JkZXItYm94OyBmb250LXNpemU6IDBweDsgdGV4dC1hbGlnbjogY2VudGVyOyI+PGRpdiBzdHlsZT0iZGlzcGxheTogaW5saW5lLWJsb2NrOyBmb250LXNpemU6IDExcHg7IGZvbnQtZmFtaWx5OiAmcXVvdDtUaW1lcyBOZXcgUm9tYW4mcXVvdDs7IGNvbG9yOiByZ2IoMCwgMCwgMCk7IGxpbmUtaGVpZ2h0OiAxLjI7IHBvaW50ZXItZXZlbnRzOiBub25lOyB3aGl0ZS1zcGFjZTogbm93cmFwOyI+UjwvZGl2PjwvZGl2PjwvZGl2PjwvZm9yZWlnbk9iamVjdD48dGV4dCB4PSIxMTQiIHk9Ijg4IiBmaWxsPSJyZ2JhKDAsIDAsIDAsIDEpIiBmb250LWZhbWlseT0iVGltZXMgTmV3IFJvbWFuIiBmb250LXNpemU9IjExcHgiIHRleHQtYW5jaG9yPSJtaWRkbGUiPlI8L3RleHQ+PC9zd2l0Y2g+PC9nPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKC0wLjUgLTAuNSlzY2FsZSgyKSI+PHN3aXRjaD48Zm9yZWlnbk9iamVjdCBwb2ludGVyLWV2ZW50cz0ibm9uZSIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgcmVxdWlyZWRGZWF0dXJlcz0iaHR0cDovL3d3dy53My5vcmcvVFIvU1ZHMTEvZmVhdHVyZSNFeHRlbnNpYmlsaXR5IiBzdHlsZT0ib3ZlcmZsb3c6IHZpc2libGU7IHRleHQtYWxpZ246IGxlZnQ7Ij48ZGl2IHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hodG1sIiBzdHlsZT0iZGlzcGxheTogZmxleDsgYWxpZ24taXRlbXM6IHVuc2FmZSBjZW50ZXI7IGp1c3RpZnktY29udGVudDogdW5zYWZlIGNlbnRlcjsgd2lkdGg6IDFweDsgaGVpZ2h0OiAxcHg7IHBhZGRpbmctdG9wOiA4M3B4OyBtYXJnaW4tbGVmdDogMTk4cHg7Ij48ZGl2IGRhdGEtZHJhd2lvLWNvbG9ycz0iY29sb3I6IHJnYmEoMCwgMCwgMCwgMSk7ICIgc3R5bGU9ImJveC1zaXppbmc6IGJvcmRlci1ib3g7IGZvbnQtc2l6ZTogMHB4OyB0ZXh0LWFsaWduOiBjZW50ZXI7Ij48ZGl2IHN0eWxlPSJkaXNwbGF5OiBpbmxpbmUtYmxvY2s7IGZvbnQtc2l6ZTogMTFweDsgZm9udC1mYW1pbHk6ICZxdW90O1RpbWVzIE5ldyBSb21hbiZxdW90OzsgY29sb3I6IHJnYigwLCAwLCAwKTsgbGluZS1oZWlnaHQ6IDEuMjsgcG9pbnRlci1ldmVudHM6IG5vbmU7IHdoaXRlLXNwYWNlOiBub3dyYXA7Ij5Db21tYW5kLWxpbmU8L2Rpdj48L2Rpdj48L2Rpdj48L2ZvcmVpZ25PYmplY3Q+PHRleHQgeD0iMTk4IiB5PSI4NiIgZmlsbD0icmdiYSgwLCAwLCAwLCAxKSIgZm9udC1mYW1pbHk9IlRpbWVzIE5ldyBSb21hbiIgZm9udC1zaXplPSIxMXB4IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5Db21tYW5kLWxpbmU8L3RleHQ+PC9zd2l0Y2g+PC9nPjxyZWN0IHg9IjM0OSIgeT0iOTYiIHdpZHRoPSIxMDUiIGhlaWdodD0iNTAiIHJ4PSI3LjUiIHJ5PSI3LjUiIGZpbGw9InJnYmEoMjU1LCAyNTUsIDI1NSwgMSkiIHN0cm9rZT0icmdiYSgwLCAwLCAwLCAxKSIgc3Ryb2tlLXdpZHRoPSIyIiBwb2ludGVyLWV2ZW50cz0ibm9uZSIvPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKC0wLjUgLTAuNSlzY2FsZSgyKSI+PHN3aXRjaD48Zm9yZWlnbk9iamVjdCBwb2ludGVyLWV2ZW50cz0ibm9uZSIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgcmVxdWlyZWRGZWF0dXJlcz0iaHR0cDovL3d3dy53My5vcmcvVFIvU1ZHMTEvZmVhdHVyZSNFeHRlbnNpYmlsaXR5IiBzdHlsZT0ib3ZlcmZsb3c6IHZpc2libGU7IHRleHQtYWxpZ246IGxlZnQ7Ij48ZGl2IHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hodG1sIiBzdHlsZT0iZGlzcGxheTogZmxleDsgYWxpZ24taXRlbXM6IHVuc2FmZSBjZW50ZXI7IGp1c3RpZnktY29udGVudDogdW5zYWZlIGNlbnRlcjsgd2lkdGg6IDUxcHg7IGhlaWdodDogMXB4OyBwYWRkaW5nLXRvcDogNjFweDsgbWFyZ2luLWxlZnQ6IDE3NnB4OyI+PGRpdiBkYXRhLWRyYXdpby1jb2xvcnM9ImNvbG9yOiByZ2JhKDAsIDAsIDAsIDEpOyAiIHN0eWxlPSJib3gtc2l6aW5nOiBib3JkZXItYm94OyBmb250LXNpemU6IDBweDsgdGV4dC1hbGlnbjogY2VudGVyOyI+PGRpdiBzdHlsZT0iZGlzcGxheTogaW5saW5lLWJsb2NrOyBmb250LXNpemU6IDhweDsgZm9udC1mYW1pbHk6ICZxdW90O1RpbWVzIE5ldyBSb21hbiZxdW90OzsgY29sb3I6IHJnYigwLCAwLCAwKTsgbGluZS1oZWlnaHQ6IDEuMjsgcG9pbnRlci1ldmVudHM6IG5vbmU7IHdoaXRlLXNwYWNlOiBub3JtYWw7IG92ZXJmbG93LXdyYXA6IG5vcm1hbDsiPnJlY3RhbmdsZTwvZGl2PjwvZGl2PjwvZGl2PjwvZm9yZWlnbk9iamVjdD48dGV4dCB4PSIyMDEiIHk9IjYzIiBmaWxsPSJyZ2JhKDAsIDAsIDAsIDEpIiBmb250LWZhbWlseT0iVGltZXMgTmV3IFJvbWFuIiBmb250LXNpemU9IjhweCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+cmVjdGFuZ2xlPC90ZXh0Pjwvc3dpdGNoPjwvZz48cGF0aCBkPSJNIDE4Mi41IDM4IEwgMjg3LjUgMzgiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgwLCAwLCAwLCAxKSIgc3Ryb2tlLXdpZHRoPSI2IiBzdHJva2UtbWl0ZXJsaW1pdD0iMTAiIHBvaW50ZXItZXZlbnRzPSJub25lIi8+PHBhdGggZD0iTSAzNTQgMzcuNjIgTCA0NTkgMzcuNjIiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgwLCAwLCAwLCAxKSIgc3Ryb2tlLXdpZHRoPSI2IiBzdHJva2UtbWl0ZXJsaW1pdD0iMTAiIHN0cm9rZS1kYXNoYXJyYXk9IjE4IDE4IiBwb2ludGVyLWV2ZW50cz0ibm9uZSIvPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKC0wLjUgLTAuNSlzY2FsZSgyKSI+PHN3aXRjaD48Zm9yZWlnbk9iamVjdCBwb2ludGVyLWV2ZW50cz0ibm9uZSIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgcmVxdWlyZWRGZWF0dXJlcz0iaHR0cDovL3d3dy53My5vcmcvVFIvU1ZHMTEvZmVhdHVyZSNFeHRlbnNpYmlsaXR5IiBzdHlsZT0ib3ZlcmZsb3c6IHZpc2libGU7IHRleHQtYWxpZ246IGxlZnQ7Ij48ZGl2IHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hodG1sIiBzdHlsZT0iZGlzcGxheTogZmxleDsgYWxpZ24taXRlbXM6IHVuc2FmZSBjZW50ZXI7IGp1c3RpZnktY29udGVudDogdW5zYWZlIGNlbnRlcjsgd2lkdGg6IDFweDsgaGVpZ2h0OiAxcHg7IHBhZGRpbmctdG9wOiAxMjhweDsgbWFyZ2luLWxlZnQ6IDExNXB4OyI+PGRpdiBkYXRhLWRyYXdpby1jb2xvcnM9ImNvbG9yOiByZ2JhKDAsIDAsIDAsIDEpOyAiIHN0eWxlPSJib3gtc2l6aW5nOiBib3JkZXItYm94OyBmb250LXNpemU6IDBweDsgdGV4dC1hbGlnbjogY2VudGVyOyI+PGRpdiBzdHlsZT0iZGlzcGxheTogaW5saW5lLWJsb2NrOyBmb250LXNpemU6IDExcHg7IGZvbnQtZmFtaWx5OiAmcXVvdDtUaW1lcyBOZXcgUm9tYW4mcXVvdDs7IGNvbG9yOiByZ2IoMCwgMCwgMCk7IGxpbmUtaGVpZ2h0OiAxLjI7IHBvaW50ZXItZXZlbnRzOiBub25lOyB3aGl0ZS1zcGFjZTogbm93cmFwOyI+TWFuZGF0b3J5PC9kaXY+PC9kaXY+PC9kaXY+PC9mb3JlaWduT2JqZWN0Pjx0ZXh0IHg9IjExNSIgeT0iMTMxIiBmaWxsPSJyZ2JhKDAsIDAsIDAsIDEpIiBmb250LWZhbWlseT0iVGltZXMgTmV3IFJvbWFuIiBmb250LXNpemU9IjExcHgiIHRleHQtYW5jaG9yPSJtaWRkbGUiPk1hbmRhdG9yeTwvdGV4dD48L3N3aXRjaD48L2c+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTAuNSAtMC41KXNjYWxlKDIpIj48c3dpdGNoPjxmb3JlaWduT2JqZWN0IHBvaW50ZXItZXZlbnRzPSJub25lIiB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiByZXF1aXJlZEZlYXR1cmVzPSJodHRwOi8vd3d3LnczLm9yZy9UUi9TVkcxMS9mZWF0dXJlI0V4dGVuc2liaWxpdHkiIHN0eWxlPSJvdmVyZmxvdzogdmlzaWJsZTsgdGV4dC1hbGlnbjogbGVmdDsiPjxkaXYgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGh0bWwiIHN0eWxlPSJkaXNwbGF5OiBmbGV4OyBhbGlnbi1pdGVtczogdW5zYWZlIGNlbnRlcjsganVzdGlmeS1jb250ZW50OiB1bnNhZmUgY2VudGVyOyB3aWR0aDogMXB4OyBoZWlnaHQ6IDFweDsgcGFkZGluZy10b3A6IDEyOHB4OyBtYXJnaW4tbGVmdDogMTk4cHg7Ij48ZGl2IGRhdGEtZHJhd2lvLWNvbG9ycz0iY29sb3I6IHJnYmEoMCwgMCwgMCwgMSk7ICIgc3R5bGU9ImJveC1zaXppbmc6IGJvcmRlci1ib3g7IGZvbnQtc2l6ZTogMHB4OyB0ZXh0LWFsaWduOiBjZW50ZXI7Ij48ZGl2IHN0eWxlPSJkaXNwbGF5OiBpbmxpbmUtYmxvY2s7IGZvbnQtc2l6ZTogMTFweDsgZm9udC1mYW1pbHk6ICZxdW90O1RpbWVzIE5ldyBSb21hbiZxdW90OzsgY29sb3I6IHJnYigwLCAwLCAwKTsgbGluZS1oZWlnaHQ6IDEuMjsgcG9pbnRlci1ldmVudHM6IG5vbmU7IHdoaXRlLXNwYWNlOiBub3dyYXA7Ij5PcHRpb25hbDwvZGl2PjwvZGl2PjwvZGl2PjwvZm9yZWlnbk9iamVjdD48dGV4dCB4PSIxOTgiIHk9IjEzMSIgZmlsbD0icmdiYSgwLCAwLCAwLCAxKSIgZm9udC1mYW1pbHk9IlRpbWVzIE5ldyBSb21hbiIgZm9udC1zaXplPSIxMXB4IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5PcHRpb25hbDwvdGV4dD48L3N3aXRjaD48L2c+PHJlY3QgeD0iMTg0IiB5PSIxOTAiIHdpZHRoPSI5NSIgaGVpZ2h0PSI0MCIgZmlsbD0iI2QzZDZlYiIgc3Ryb2tlPSJub25lIiBwb2ludGVyLWV2ZW50cz0ibm9uZSIvPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKC0wLjUgLTAuNSlzY2FsZSgyKSI+PHN3aXRjaD48Zm9yZWlnbk9iamVjdCBwb2ludGVyLWV2ZW50cz0ibm9uZSIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgcmVxdWlyZWRGZWF0dXJlcz0iaHR0cDovL3d3dy53My5vcmcvVFIvU1ZHMTEvZmVhdHVyZSNFeHRlbnNpYmlsaXR5IiBzdHlsZT0ib3ZlcmZsb3c6IHZpc2libGU7IHRleHQtYWxpZ246IGxlZnQ7Ij48ZGl2IHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hodG1sIiBzdHlsZT0iZGlzcGxheTogZmxleDsgYWxpZ24taXRlbXM6IHVuc2FmZSBjZW50ZXI7IGp1c3RpZnktY29udGVudDogdW5zYWZlIGNlbnRlcjsgd2lkdGg6IDQ2cHg7IGhlaWdodDogMXB4OyBwYWRkaW5nLXRvcDogMTA1cHg7IG1hcmdpbi1sZWZ0OiA5M3B4OyI+PGRpdiBkYXRhLWRyYXdpby1jb2xvcnM9ImNvbG9yOiByZ2JhKDAsIDAsIDAsIDEpOyAiIHN0eWxlPSJib3gtc2l6aW5nOiBib3JkZXItYm94OyBmb250LXNpemU6IDBweDsgdGV4dC1hbGlnbjogY2VudGVyOyI+PGRpdiBzdHlsZT0iZGlzcGxheTogaW5saW5lLWJsb2NrOyBmb250LXNpemU6IDEycHg7IGZvbnQtZmFtaWx5OiAmcXVvdDtUaW1lcyBOZXcgUm9tYW4mcXVvdDs7IGNvbG9yOiByZ2IoMCwgMCwgMCk7IGxpbmUtaGVpZ2h0OiAxLjI7IHBvaW50ZXItZXZlbnRzOiBub25lOyB3aGl0ZS1zcGFjZTogbm9ybWFsOyBvdmVyZmxvdy13cmFwOiBub3JtYWw7Ij48c3BhbiBzdHlsZT0iZm9udC1zaXplOiA4cHgiPmZpbGw8L3NwYW4+PC9kaXY+PC9kaXY+PC9kaXY+PC9mb3JlaWduT2JqZWN0Pjx0ZXh0IHg9IjExNiIgeT0iMTA5IiBmaWxsPSJyZ2JhKDAsIDAsIDAsIDEpIiBmb250LWZhbWlseT0iVGltZXMgTmV3IFJvbWFuIiBmb250LXNpemU9IjEycHgiIHRleHQtYW5jaG9yPSJtaWRkbGUiPmZpbGw8L3RleHQ+PC9zd2l0Y2g+PC9nPjxyZWN0IHg9IjM0OSIgeT0iMTkwIiB3aWR0aD0iOTUiIGhlaWdodD0iNDAiIGZpbGw9IiNmZmZmZmYiIHN0cm9rZT0ibm9uZSIgcG9pbnRlci1ldmVudHM9Im5vbmUiLz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtMC41IC0wLjUpc2NhbGUoMikiPjxzd2l0Y2g+PGZvcmVpZ25PYmplY3QgcG9pbnRlci1ldmVudHM9Im5vbmUiIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIHJlcXVpcmVkRmVhdHVyZXM9Imh0dHA6Ly93d3cudzMub3JnL1RSL1NWRzExL2ZlYXR1cmUjRXh0ZW5zaWJpbGl0eSIgc3R5bGU9Im92ZXJmbG93OiB2aXNpYmxlOyB0ZXh0LWFsaWduOiBsZWZ0OyI+PGRpdiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94aHRtbCIgc3R5bGU9ImRpc3BsYXk6IGZsZXg7IGFsaWduLWl0ZW1zOiB1bnNhZmUgY2VudGVyOyBqdXN0aWZ5LWNvbnRlbnQ6IHVuc2FmZSBjZW50ZXI7IHdpZHRoOiA0NnB4OyBoZWlnaHQ6IDFweDsgcGFkZGluZy10b3A6IDEwNXB4OyBtYXJnaW4tbGVmdDogMTc2cHg7Ij48ZGl2IGRhdGEtZHJhd2lvLWNvbG9ycz0iY29sb3I6IHJnYmEoMCwgMCwgMCwgMSk7ICIgc3R5bGU9ImJveC1zaXppbmc6IGJvcmRlci1ib3g7IGZvbnQtc2l6ZTogMHB4OyB0ZXh0LWFsaWduOiBjZW50ZXI7Ij48ZGl2IHN0eWxlPSJkaXNwbGF5OiBpbmxpbmUtYmxvY2s7IGZvbnQtc2l6ZTogMTJweDsgZm9udC1mYW1pbHk6ICZxdW90O1RpbWVzIE5ldyBSb21hbiZxdW90OzsgY29sb3I6IHJnYigwLCAwLCAwKTsgbGluZS1oZWlnaHQ6IDEuMjsgcG9pbnRlci1ldmVudHM6IG5vbmU7IHdoaXRlLXNwYWNlOiBub3JtYWw7IG92ZXJmbG93LXdyYXA6IG5vcm1hbDsiPjxzcGFuIHN0eWxlPSJmb250LXNpemU6IDhweCI+bm8gZmlsbDwvc3Bhbj48L2Rpdj48L2Rpdj48L2Rpdj48L2ZvcmVpZ25PYmplY3Q+PHRleHQgeD0iMTk4IiB5PSIxMDkiIGZpbGw9InJnYmEoMCwgMCwgMCwgMSkiIGZvbnQtZmFtaWx5PSJUaW1lcyBOZXcgUm9tYW4iIGZvbnQtc2l6ZT0iMTJweCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+bm8gZmlsbDwvdGV4dD48L3N3aXRjaD48L2c+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTAuNSAtMC41KXNjYWxlKDIpIj48c3dpdGNoPjxmb3JlaWduT2JqZWN0IHBvaW50ZXItZXZlbnRzPSJub25lIiB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiByZXF1aXJlZEZlYXR1cmVzPSJodHRwOi8vd3d3LnczLm9yZy9UUi9TVkcxMS9mZWF0dXJlI0V4dGVuc2liaWxpdHkiIHN0eWxlPSJvdmVyZmxvdzogdmlzaWJsZTsgdGV4dC1hbGlnbjogbGVmdDsiPjxkaXYgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGh0bWwiIHN0eWxlPSJkaXNwbGF5OiBmbGV4OyBhbGlnbi1pdGVtczogdW5zYWZlIGNlbnRlcjsganVzdGlmeS1jb250ZW50OiB1bnNhZmUgY2VudGVyOyB3aWR0aDogMXB4OyBoZWlnaHQ6IDFweDsgcGFkZGluZy10b3A6IDI0cHg7IG1hcmdpbi1sZWZ0OiAzNXB4OyI+PGRpdiBkYXRhLWRyYXdpby1jb2xvcnM9ImNvbG9yOiByZ2JhKDAsIDAsIDAsIDEpOyAiIHN0eWxlPSJib3gtc2l6aW5nOiBib3JkZXItYm94OyBmb250LXNpemU6IDBweDsgdGV4dC1hbGlnbjogY2VudGVyOyI+PGRpdiBzdHlsZT0iZGlzcGxheTogaW5saW5lLWJsb2NrOyBmb250LXNpemU6IDEwcHg7IGZvbnQtZmFtaWx5OiAmcXVvdDtUaW1lcyBOZXcgUm9tYW4mcXVvdDs7IGNvbG9yOiByZ2IoMCwgMCwgMCk7IGxpbmUtaGVpZ2h0OiAxLjI7IHBvaW50ZXItZXZlbnRzOiBub25lOyBmb250LXdlaWdodDogYm9sZDsgd2hpdGUtc3BhY2U6IG5vd3JhcDsiPlJ1bm5pbmcgPGJyIHN0eWxlPSJmb250LXNpemU6IDEwcHgiIC8+U2Vzc2lvbjwvZGl2PjwvZGl2PjwvZGl2PjwvZm9yZWlnbk9iamVjdD48dGV4dCB4PSIzNSIgeT0iMjciIGZpbGw9InJnYmEoMCwgMCwgMCwgMSkiIGZvbnQtZmFtaWx5PSJUaW1lcyBOZXcgUm9tYW4iIGZvbnQtc2l6ZT0iMTBweCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC13ZWlnaHQ9ImJvbGQiPlJ1bm5pbmcuLi48L3RleHQ+PC9zd2l0Y2g+PC9nPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKC0wLjUgLTAuNSlzY2FsZSgyKSI+PHN3aXRjaD48Zm9yZWlnbk9iamVjdCBwb2ludGVyLWV2ZW50cz0ibm9uZSIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgcmVxdWlyZWRGZWF0dXJlcz0iaHR0cDovL3d3dy53My5vcmcvVFIvU1ZHMTEvZmVhdHVyZSNFeHRlbnNpYmlsaXR5IiBzdHlsZT0ib3ZlcmZsb3c6IHZpc2libGU7IHRleHQtYWxpZ246IGxlZnQ7Ij48ZGl2IHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hodG1sIiBzdHlsZT0iZGlzcGxheTogZmxleDsgYWxpZ24taXRlbXM6IHVuc2FmZSBjZW50ZXI7IGp1c3RpZnktY29udGVudDogdW5zYWZlIGNlbnRlcjsgd2lkdGg6IDFweDsgaGVpZ2h0OiAxcHg7IHBhZGRpbmctdG9wOiAxMTNweDsgbWFyZ2luLWxlZnQ6IDM1cHg7Ij48ZGl2IGRhdGEtZHJhd2lvLWNvbG9ycz0iY29sb3I6IHJnYmEoMCwgMCwgMCwgMSk7ICIgc3R5bGU9ImJveC1zaXppbmc6IGJvcmRlci1ib3g7IGZvbnQtc2l6ZTogMHB4OyB0ZXh0LWFsaWduOiBjZW50ZXI7Ij48ZGl2IHN0eWxlPSJkaXNwbGF5OiBpbmxpbmUtYmxvY2s7IGZvbnQtc2l6ZTogMTBweDsgZm9udC1mYW1pbHk6ICZxdW90O1RpbWVzIE5ldyBSb21hbiZxdW90OzsgY29sb3I6IHJnYigwLCAwLCAwKTsgbGluZS1oZWlnaHQ6IDEuMjsgcG9pbnRlci1ldmVudHM6IG5vbmU7IGZvbnQtd2VpZ2h0OiBib2xkOyB3aGl0ZS1zcGFjZTogbm93cmFwOyI+PGRpdiBzdHlsZT0iZm9udC1zaXplOiAxMHB4Ij48c3BhbiBzdHlsZT0iYmFja2dyb3VuZC1jb2xvcjogdHJhbnNwYXJlbnQgOyBmb250LXNpemU6IDEwcHgiPlJ1bm5pbmc8L3NwYW4+PC9kaXY+UmVxdWlyZW1lbnQ8L2Rpdj48L2Rpdj48L2Rpdj48L2ZvcmVpZ25PYmplY3Q+PHRleHQgeD0iMzUiIHk9IjExNiIgZmlsbD0icmdiYSgwLCAwLCAwLCAxKSIgZm9udC1mYW1pbHk9IlRpbWVzIE5ldyBSb21hbiIgZm9udC1zaXplPSIxMHB4IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXdlaWdodD0iYm9sZCI+UnVubmluZ1JlcXVpcmUuLi48L3RleHQ+PC9zd2l0Y2g+PC9nPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKC0wLjUgLTAuNSlzY2FsZSgyKSI+PHN3aXRjaD48Zm9yZWlnbk9iamVjdCBwb2ludGVyLWV2ZW50cz0ibm9uZSIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgcmVxdWlyZWRGZWF0dXJlcz0iaHR0cDovL3d3dy53My5vcmcvVFIvU1ZHMTEvZmVhdHVyZSNFeHRlbnNpYmlsaXR5IiBzdHlsZT0ib3ZlcmZsb3c6IHZpc2libGU7IHRleHQtYWxpZ246IGxlZnQ7Ij48ZGl2IHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hodG1sIiBzdHlsZT0iZGlzcGxheTogZmxleDsgYWxpZ24taXRlbXM6IHVuc2FmZSBjZW50ZXI7IGp1c3RpZnktY29udGVudDogdW5zYWZlIGNlbnRlcjsgd2lkdGg6IDFweDsgaGVpZ2h0OiAxcHg7IHBhZGRpbmctdG9wOiA2OHB4OyBtYXJnaW4tbGVmdDogMzVweDsiPjxkaXYgZGF0YS1kcmF3aW8tY29sb3JzPSJjb2xvcjogcmdiYSgwLCAwLCAwLCAxKTsgIiBzdHlsZT0iYm94LXNpemluZzogYm9yZGVyLWJveDsgZm9udC1zaXplOiAwcHg7IHRleHQtYWxpZ246IGNlbnRlcjsiPjxkaXYgc3R5bGU9ImRpc3BsYXk6IGlubGluZS1ibG9jazsgZm9udC1zaXplOiAxMHB4OyBmb250LWZhbWlseTogJnF1b3Q7VGltZXMgTmV3IFJvbWFuJnF1b3Q7OyBjb2xvcjogcmdiKDAsIDAsIDApOyBsaW5lLWhlaWdodDogMS4yOyBwb2ludGVyLWV2ZW50czogbm9uZTsgZm9udC13ZWlnaHQ6IGJvbGQ7IHdoaXRlLXNwYWNlOiBub3dyYXA7Ij5TdGVwIDxiciBzdHlsZT0iZm9udC1zaXplOiAxMHB4IiAvPkNsYXNzPC9kaXY+PC9kaXY+PC9kaXY+PC9mb3JlaWduT2JqZWN0Pjx0ZXh0IHg9IjM1IiB5PSI3MSIgZmlsbD0icmdiYSgwLCAwLCAwLCAxKSIgZm9udC1mYW1pbHk9IlRpbWVzIE5ldyBSb21hbiIgZm9udC1zaXplPSIxMHB4IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXdlaWdodD0iYm9sZCI+U3RlcC4uLjwvdGV4dD48L3N3aXRjaD48L2c+PC9nPjxzd2l0Y2g+PGcgcmVxdWlyZWRGZWF0dXJlcz0iaHR0cDovL3d3dy53My5vcmcvVFIvU1ZHMTEvZmVhdHVyZSNFeHRlbnNpYmlsaXR5Ii8+PGEgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMCwtNSkiIHhsaW5rOmhyZWY9Imh0dHBzOi8vd3d3LmRpYWdyYW1zLm5ldC9kb2MvZmFxL3N2Zy1leHBvcnQtdGV4dC1wcm9ibGVtcyIgdGFyZ2V0PSJfYmxhbmsiPjx0ZXh0IHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMTBweCIgeD0iNTAlIiB5PSIxMDAlIj5WaWV3ZXIgZG9lcyBub3Qgc3VwcG9ydCBmdWxsIFNWRyAxLjE8L3RleHQ+PC9hPjwvc3dpdGNoPjwvc3ZnPg=="},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="checking-workflow-status" class="section level3" number="4.2.2">
+<h3>
+<span class="header-section-number">4.2.2</span> Checking workflow status<a class="anchor" aria-label="anchor" href="#checking-workflow-status"><i class="fas fa-link"></i></a>
+</h3>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">#statusWF(sal)</span>
+<span class="va">sal</span></code></pre></div>
+<pre><code>## Instance of 'SYSargsList': 
+##     WF Steps:
+##        1. load_SPR --&gt; Status: Pending
+##        2. trimming --&gt; Status: Pending 
+##            Total Files: 72 | Existing: 0 | Missing: 72 
+##          2.1. trimmomatic-pe
+##              cmdlist: 18 | Pending: 18
+##        3. fastq_report --&gt; Status: Pending
+##        4. hisat2_index --&gt; Status: Pending 
+##            Total Files: 8 | Existing: 0 | Missing: 8 
+##          4.1. hisat2-index
+##              cmdlist: 1 | Pending: 1
+##        5. hisat2_mapping --&gt; Status: Pending 
+##            Total Files: 72 | Existing: 0 | Missing: 72 
+##          5.1. hisat2
+##              cmdlist: 18 | Pending: 18
+##          5.2. samtools-view
+##              cmdlist: 18 | Pending: 18
+##          5.3. samtools-sort
+##              cmdlist: 18 | Pending: 18
+##          5.4. samtools-index
+##              cmdlist: 18 | Pending: 18
+##        6. align_stats --&gt; Status: Pending
+##        7. create_db --&gt; Status: Pending
+##        8. read_counting --&gt; Status: Pending
+##        9. sample_tree --&gt; Status: Pending
+##        10. run_edger --&gt; Status: Pending
+##        11. custom_annot --&gt; Status: Pending
+##        12. filter_degs --&gt; Status: Pending
+##        13. venn_diagram --&gt; Status: Pending
+##        14. get_go_annot --&gt; Status: Pending
+##        15. go_enrich --&gt; Status: Pending
+##        16. go_plot --&gt; Status: Pending
+##        17. heatmap --&gt; Status: Pending
+##        18. sessionInfo --&gt; Status: Pending
+## </code></pre>
+</div>
+<div id="accessing-logs-report" class="section level3" number="4.2.3">
+<h3>
+<span class="header-section-number">4.2.3</span> Accessing logs report<a class="anchor" aria-label="anchor" href="#accessing-logs-report"><i class="fas fa-link"></i></a>
+</h3>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">sal</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/systemPipeR/man/renderLogs.html">renderLogs</a></span><span class="op">(</span><span class="va">sal</span><span class="op">)</span></code></pre></div>
+</div>
+</div>
+<div id="systempiper-rna-seq-workflow-analysis-notebook" class="section level2" number="4.3">
+<h2>
+<span class="header-section-number">4.3</span> <code>systemPipeR</code> RNA-seq Workflow Analysis Notebook<a class="anchor" aria-label="anchor" href="#systempiper-rna-seq-workflow-analysis-notebook"><i class="fas fa-link"></i></a>
+</h2>
+<div id="introduction" class="section level3" number="4.3.1">
+<h3>
+<span class="header-section-number">4.3.1</span> Introduction<a class="anchor" aria-label="anchor" href="#introduction"><i class="fas fa-link"></i></a>
+</h3>
+<p>Users want to provide here background information about the design of their RNA-Seq project.</p>
+<div id="samples-and-environment-settings" class="section level4" number="4.3.1.1">
+<h4>
+<span class="header-section-number">4.3.1.1</span> Samples and environment settings<a class="anchor" aria-label="anchor" href="#samples-and-environment-settings"><i class="fas fa-link"></i></a>
+</h4>
+<div id="environment-settings-and-input-data" class="section level5" number="4.3.1.1.1">
+<h5>
+<span class="header-section-number">4.3.1.1.1</span> Environment settings and input data<a class="anchor" aria-label="anchor" href="#environment-settings-and-input-data"><i class="fas fa-link"></i></a>
+</h5>
+<p>Typically, the user wants to record here the sources and versions of the
+reference genome sequence along with the corresponding annotations. In
+the provided sample data set all data inputs are stored in a <code>data</code>
+subdirectory and all results will be written to a separate <code>results</code> directory,
+while the <code>systemPipeRNAseq.Rmd</code> script and the <code>targets</code> file are expected to be
+located in the parent directory. The R session is expected to run from this parent directory.</p>
+<p><a href="http://bioconductor.org/packages/release/data/experiment/html/systemPipeRdata.html"><em>systemPipeRdata</em></a> package is a helper package to generate a fully populated <a href="http://bioconductor.org/packages/release/bioc/html/systemPipeR.html"><em>systemPipeR</em></a>
+workflow environment in the current working directory with a single command.
+All the instruction for generating the workflow are provide in the <em>systemPipeRdata</em> vignette <a href="http://www.bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeRdata.html#1_Introduction">here</a>.</p>
+<p>The mini sample FASTQ files used by this report as well as the associated reference genome files
+can be loaded via the <em>systemPipeRdata</em> package.
+The chosen data set <a href="http://www.ncbi.nlm.nih.gov/sra/?term=SRP010938">SRP010938</a>
+contains 18 paired-end (PE) read sets from <em>Arabidposis thaliana</em>
+<span class="citation">(<a href="references-1.html#ref-Howard2013-fq" role="doc-biblioref">Howard et al. 2013</a>)</span>. To minimize processing time during testing, each FASTQ
+file has been subsetted to 90,000-100,000 randomly sampled PE reads that
+map to the first 100,000 nucleotides of each chromosome of the <em>A.
+thaliana</em> genome. The corresponding reference genome sequence (FASTA) and
+its GFF annotation files have been truncated accordingly. This way the entire
+test sample data set is less than 200MB in storage space. A PE read set has been
+chosen for this test data set for flexibility, because it can be used for testing both types
+of analysis routines requiring either SE (single end) reads or PE reads.</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">systemPipeRdata</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/systemPipeRdata/man/genWorkenvir.html">genWorkenvir</a></span><span class="op">(</span>workflow <span class="op">=</span> <span class="st">"rnaseq"</span>, mydirname <span class="op">=</span> <span class="st">"rnaseq"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/getwd.html">setwd</a></span><span class="op">(</span><span class="st">"rnaseq"</span><span class="op">)</span></code></pre></div>
+</div>
+</div>
+</div>
+<div id="create-the-workflow-1" class="section level3" number="4.3.2">
+<h3>
+<span class="header-section-number">4.3.2</span> Create the workflow<a class="anchor" aria-label="anchor" href="#create-the-workflow-1"><i class="fas fa-link"></i></a>
+</h3>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">sal</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/systemPipeR/man/SPRproject.html">SPRproject</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<div id="required-packages-and-resources" class="section level4" number="4.3.2.1">
+<h4>
+<span class="header-section-number">4.3.2.1</span> Required packages and resources<a class="anchor" aria-label="anchor" href="#required-packages-and-resources"><i class="fas fa-link"></i></a>
+</h4>
+<p>The <code>systemPipeR</code> package needs to be loaded <span class="citation">(<a href="references-1.html#ref-H_Backman2016-bt" role="doc-biblioref">H Backman and Girke 2016</a>)</span>.</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">appendStep</span><span class="op">(</span><span class="va">sal</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/systemPipeR/man/LineWise-class.html">LineWise</a></span><span class="op">(</span><span class="op">{</span>
+                            <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://systempipe.org/">systemPipeR</a></span><span class="op">)</span>
+                            <span class="op">}</span>, step_name <span class="op">=</span> <span class="st">"load_SPR"</span><span class="op">)</span></code></pre></div>
+</div>
+<div id="read-preprocessing" class="section level4" number="4.3.2.2">
+<h4>
+<span class="header-section-number">4.3.2.2</span> Read preprocessing<a class="anchor" aria-label="anchor" href="#read-preprocessing"><i class="fas fa-link"></i></a>
+</h4>
+<div id="read-trimming-with-trimmomatic" class="section level5" number="4.3.2.2.1">
+<h5>
+<span class="header-section-number">4.3.2.2.1</span> Read trimming with Trimmomatic<a class="anchor" aria-label="anchor" href="#read-trimming-with-trimmomatic"><i class="fas fa-link"></i></a>
+</h5>
+<p>Next, we need to populate the object created with the first step in the
+workflow. Here, an example of how to perform this task using parameters template
+files for trimming FASTQ files with <a href="http://www.usadellab.org/cms/?page=trimmomatic">Trimmomatic</a> software <span class="citation">(<a href="references-1.html#ref-Bolger2014-yr" role="doc-biblioref">Bolger, Lohse, and Usadel 2014</a>)</span>.</p>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">targetspath</span> <span class="op">&lt;-</span> <span class="st">"targetsPE.txt"</span>
+<span class="fu">appendStep</span><span class="op">(</span><span class="va">sal</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/systemPipeR/man/SYSargsList-class.html">SYSargsList</a></span><span class="op">(</span>
+    step_name <span class="op">=</span> <span class="st">"trimming"</span>,
+    targets<span class="op">=</span><span class="va">targetspath</span>, 
+    wf_file <span class="op">=</span> <span class="st">"trimmomatic/trimmomatic-pe.cwl"</span>, input_file <span class="op">=</span> <span class="st">"trimmomatic/trimmomatic-pe.yml"</span>,
+    dir_path<span class="op">=</span> <span class="st">"param/cwl"</span>,
+    inputvars<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>FileName1<span class="op">=</span><span class="st">"_FASTQ_PATH1_"</span>, FileName2<span class="op">=</span><span class="st">"_FASTQ_PATH2_"</span>, SampleName<span class="op">=</span><span class="st">"_SampleName_"</span><span class="op">)</span>, 
+    dependency <span class="op">=</span> <span class="st">"load_SPR"</span><span class="op">)</span></code></pre></div>
+</div>
+<div id="fastq-quality-report" class="section level5" number="4.3.2.2.2">
+<h5>
+<span class="header-section-number">4.3.2.2.2</span> FASTQ quality report<a class="anchor" aria-label="anchor" href="#fastq-quality-report"><i class="fas fa-link"></i></a>
+</h5>
+<p>The following <code>seeFastq</code> and <code>seeFastqPlot</code> functions generate and plot a series of useful
+quality statistics for a set of FASTQ files including per cycle quality box
+plots, base proportions, base-level quality trends, relative k-mer
+diversity, length and occurrence distribution of reads, number of reads
+above quality cutoffs and mean quality distribution. The results are
+written to a PDF file named <code>fastqReport.pdf</code>.</p>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">appendStep</span><span class="op">(</span><span class="va">sal</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/systemPipeR/man/LineWise-class.html">LineWise</a></span><span class="op">(</span><span class="op">{</span>
+                            <span class="va">fastq</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/systemPipeR/man/SYSargsList-class.html">getColumn</a></span><span class="op">(</span><span class="va">sal</span>, step <span class="op">=</span> <span class="st">"trimming"</span>, <span class="st">"targetsWF"</span>, column <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>
+                            <span class="va">fqlist</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/systemPipeR/man/seeFastq.html">seeFastq</a></span><span class="op">(</span>fastq<span class="op">=</span><span class="va">fastq</span>, batchsize<span class="op">=</span><span class="fl">10000</span>, klength<span class="op">=</span><span class="fl">8</span><span class="op">)</span>
+                            <span class="fu"><a href="https://rdrr.io/r/grDevices/pdf.html">pdf</a></span><span class="op">(</span><span class="st">"./results/fastqReport.pdf"</span>, height<span class="op">=</span><span class="fl">18</span>, width<span class="op">=</span><span class="fl">4</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">fqlist</span><span class="op">)</span><span class="op">)</span>
+                            <span class="fu"><a href="https://rdrr.io/pkg/systemPipeR/man/seeFastq.html">seeFastqPlot</a></span><span class="op">(</span><span class="va">fqlist</span><span class="op">)</span>
+                            <span class="fu"><a href="https://rdrr.io/r/grDevices/dev.html">dev.off</a></span><span class="op">(</span><span class="op">)</span>
+                            <span class="op">}</span>, step_name <span class="op">=</span> <span class="st">"fastq_report"</span>, 
+                            dependency <span class="op">=</span> <span class="st">"trimming"</span><span class="op">)</span></code></pre></div>
+<img src="results/fastqReport.png"><div align="center">
+Figure 1: FASTQ quality report for 18 samples
+</div>
+<p></p>
+</div>
+</div>
+<div id="alignments" class="section level4" number="4.3.2.3">
+<h4>
+<span class="header-section-number">4.3.2.3</span> Alignments<a class="anchor" aria-label="anchor" href="#alignments"><i class="fas fa-link"></i></a>
+</h4>
+<div id="read-mapping-with-hisat2" class="section level5" number="4.3.2.3.1">
+<h5>
+<span class="header-section-number">4.3.2.3.1</span> Read mapping with <code>HISAT2</code><a class="anchor" aria-label="anchor" href="#read-mapping-with-hisat2"><i class="fas fa-link"></i></a>
+</h5>
+<p>The following steps will demonstrate how to use the short read aligner <code>Hisat2</code>
+<span class="citation">(<a href="references-1.html#ref-Kim2015-ve" role="doc-biblioref">Kim, Langmead, and Salzberg 2015</a>)</span> in both interactive job submissions and batch submissions to
+queuing systems of clusters using the <em><code>systemPipeR's</code></em> new CWL command-line interface.</p>
+<p>Build <code>Hisat2</code> index.</p>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">appendStep</span><span class="op">(</span><span class="va">sal</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/systemPipeR/man/SYSargsList-class.html">SYSargsList</a></span><span class="op">(</span>
+  step_name <span class="op">=</span> <span class="st">"hisat2_index"</span>, dir <span class="op">=</span> <span class="cn">FALSE</span>, targets<span class="op">=</span><span class="cn">NULL</span>, 
+  wf_file <span class="op">=</span> <span class="st">"hisat2/hisat2-index.cwl"</span>, 
+  input_file<span class="op">=</span><span class="st">"hisat2/hisat2-index.yml"</span>,
+  dir_path<span class="op">=</span><span class="st">"param/cwl"</span>, 
+  dependency <span class="op">=</span> <span class="st">"load_SPR"</span>
+<span class="op">)</span></code></pre></div>
+</div>
+<div id="hisat2-mapping" class="section level5" number="4.3.2.3.2">
+<h5>
+<span class="header-section-number">4.3.2.3.2</span> HISAT2 mapping<a class="anchor" aria-label="anchor" href="#hisat2-mapping"><i class="fas fa-link"></i></a>
+</h5>
+<p>The parameter settings of the aligner are defined in the <code>hisat2-mapping-se.cwl</code>
+and <code>hisat2-mapping-se.yml</code> files. The following shows how to construct the
+corresponding <em>SYSargsList</em> object.</p>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">appendStep</span><span class="op">(</span><span class="va">sal</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/systemPipeR/man/SYSargsList-class.html">SYSargsList</a></span><span class="op">(</span>
+  step_name <span class="op">=</span> <span class="st">"hisat2_mapping"</span>,
+  targets <span class="op">=</span><span class="st">"trimming"</span>, dir <span class="op">=</span> <span class="cn">TRUE</span>, 
+  wf_file <span class="op">=</span> <span class="st">"workflow-hisat2/workflow_hisat2-pe.cwl"</span>,
+  input_file <span class="op">=</span> <span class="st">"workflow-hisat2/workflow_hisat2-pe.yml"</span>,
+  dir_path <span class="op">=</span> <span class="st">"param/cwl"</span>,
+  inputvars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>trimmomatic_1_paired <span class="op">=</span> <span class="st">"_FASTQ_PATH1_"</span>, trimmomatic_2_paired <span class="op">=</span> <span class="st">"_FASTQ_PATH2_"</span>, 
+                SampleName <span class="op">=</span> <span class="st">"_SampleName_"</span><span class="op">)</span>,
+  rm_targets_col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"FileName1"</span>, <span class="st">"FileName2"</span><span class="op">)</span>, 
+  dependency <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"trimming"</span>, <span class="st">"hisat2_index"</span><span class="op">)</span>
+<span class="op">)</span></code></pre></div>
+</div>
+<div id="read-and-alignment-stats" class="section level5" number="4.3.2.3.3">
+<h5>
+<span class="header-section-number">4.3.2.3.3</span> Read and alignment stats<a class="anchor" aria-label="anchor" href="#read-and-alignment-stats"><i class="fas fa-link"></i></a>
+</h5>
+<p>The following provides an overview of the number of reads in each sample
+and how many of them aligned to the reference.</p>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">appendStep</span><span class="op">(</span><span class="va">sal</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/systemPipeR/man/LineWise-class.html">LineWise</a></span><span class="op">(</span><span class="op">{</span>
+                           <span class="va">bampaths</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/systemPipeR/man/SYSargsList-class.html">getColumn</a></span><span class="op">(</span><span class="va">sal</span>, step <span class="op">=</span> <span class="st">"hisat2_mapping"</span>, <span class="st">"outfiles"</span>, column <span class="op">=</span> <span class="st">"samtools_sort_bam"</span><span class="op">)</span>
+                           <span class="va">fqpaths</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/systemPipeR/man/SYSargsList-class.html">getColumn</a></span><span class="op">(</span><span class="va">sal</span>, step <span class="op">=</span> <span class="st">"trimming"</span>, <span class="st">"targetsWF"</span>, column <span class="op">=</span> <span class="st">"FileName1"</span><span class="op">)</span>
+                           <span class="va">read_statsDF</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/systemPipeR/man/alignStats.html">alignStats</a></span><span class="op">(</span>args<span class="op">=</span><span class="va">bampaths</span>, fqpaths <span class="op">=</span> <span class="va">fqpaths</span>, pairEnd <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+                           <span class="fu"><a href="https://rdrr.io/r/utils/write.table.html">write.table</a></span><span class="op">(</span><span class="va">read_statsDF</span>, <span class="st">"results/alignStats.xls"</span>, row.names<span class="op">=</span><span class="cn">FALSE</span>, quote<span class="op">=</span><span class="cn">FALSE</span>, sep<span class="op">=</span><span class="st">"\t"</span><span class="op">)</span>
+                            <span class="op">}</span>, step_name <span class="op">=</span> <span class="st">"align_stats"</span>, 
+                            dependency <span class="op">=</span> <span class="st">"hisat2_mapping"</span><span class="op">)</span></code></pre></div>
+</div>
+</div>
+<div id="read-quantification" class="section level4" number="4.3.2.4">
+<h4>
+<span class="header-section-number">4.3.2.4</span> Read quantification<a class="anchor" aria-label="anchor" href="#read-quantification"><i class="fas fa-link"></i></a>
+</h4>
+<p>Reads overlapping with annotation ranges of interest are counted for
+each sample using the <code>summarizeOverlaps</code> function <span class="citation">(<a href="references-1.html#ref-Lawrence2013-kt" role="doc-biblioref">Lawrence et al. 2013</a>)</span>. The read counting is
+preformed for exon gene regions in a non-strand-specific manner while
+ignoring overlaps among different genes. Subsequently, the expression
+count values are normalized by <em>reads per kp per million mapped reads</em>
+(RPKM). The raw read count table (<code>countDFeByg.xls</code>) and the corresponding
+RPKM table (<code>rpkmDFeByg.xls</code>) are written to separate files in the directory of this project. Parallelization is achieved with the <code>BiocParallel</code> package, here using 8 CPU cores.</p>
+<div id="create-a-database-for-gene-annotation" class="section level5" number="4.3.2.4.1">
+<h5>
+<span class="header-section-number">4.3.2.4.1</span> Create a database for gene annotation<a class="anchor" aria-label="anchor" href="#create-a-database-for-gene-annotation"><i class="fas fa-link"></i></a>
+</h5>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">appendStep</span><span class="op">(</span><span class="va">sal</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/systemPipeR/man/LineWise-class.html">LineWise</a></span><span class="op">(</span><span class="op">{</span>
+                    <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://bioconductor.org/packages/GenomicFeatures">"GenomicFeatures"</a></span><span class="op">)</span>; <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Bioconductor/BiocParallel">BiocParallel</a></span><span class="op">)</span>
+                    <span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="op">)</span><span class="op">{</span>
+                    <span class="co"># if db is there, skip this step</span>
+                    <span class="kw">if</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/files.html">file.exists</a></span><span class="op">(</span><span class="st">"./data/tair10.sqlite"</span><span class="op">)</span><span class="op">)</span> <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="cn">TRUE</span><span class="op">)</span>
+                    <span class="co"># otherwise prepare the db</span>
+                    <span class="va">txdb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/GenomicFeatures/man/makeTxDbFromGFF.html">makeTxDbFromGFF</a></span><span class="op">(</span>file<span class="op">=</span><span class="st">"data/tair10.gff"</span>, format<span class="op">=</span><span class="st">"gff"</span>, dataSource<span class="op">=</span><span class="st">"TAIR"</span>, organism<span class="op">=</span><span class="st">"Arabidopsis thaliana"</span><span class="op">)</span>
+                    <span class="fu">saveDb</span><span class="op">(</span><span class="va">txdb</span>, file<span class="op">=</span><span class="st">"./data/tair10.sqlite"</span><span class="op">)</span>
+                    <span class="op">}</span><span class="op">)</span><span class="op">(</span><span class="op">)</span>
+                    <span class="op">}</span>, step_name <span class="op">=</span> <span class="st">"create_db"</span>, 
+                    dependency <span class="op">=</span> <span class="st">"hisat2_mapping"</span><span class="op">)</span></code></pre></div>
+</div>
+<div id="read-counting-with-summarizeoverlaps-in-parallel-mode-using-multiple-cores" class="section level5" number="4.3.2.4.2">
+<h5>
+<span class="header-section-number">4.3.2.4.2</span> Read counting with <code>summarizeOverlaps</code> in parallel mode using multiple cores<a class="anchor" aria-label="anchor" href="#read-counting-with-summarizeoverlaps-in-parallel-mode-using-multiple-cores"><i class="fas fa-link"></i></a>
+</h5>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">appendStep</span><span class="op">(</span><span class="va">sal</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/systemPipeR/man/LineWise-class.html">LineWise</a></span><span class="op">(</span><span class="op">{</span>
+                    <span class="va">txdb</span> <span class="op">&lt;-</span> <span class="fu">loadDb</span><span class="op">(</span><span class="st">"./data/tair10.sqlite"</span><span class="op">)</span>
+                    <span class="va">outpaths</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/systemPipeR/man/SYSargsList-class.html">getColumn</a></span><span class="op">(</span><span class="va">sal</span>, step <span class="op">=</span> <span class="st">"hisat2_mapping"</span>, <span class="st">"outfiles"</span>, column <span class="op">=</span> <span class="st">"samtools_sort_bam"</span><span class="op">)</span>
+                    <span class="va">eByg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/GenomicFeatures/man/transcriptsBy.html">exonsBy</a></span><span class="op">(</span><span class="va">txdb</span>, by<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"gene"</span><span class="op">)</span><span class="op">)</span>
+                    <span class="va">bfl</span> <span class="op">&lt;-</span> <span class="fu">BamFileList</span><span class="op">(</span><span class="va">outpaths</span>, yieldSize<span class="op">=</span><span class="fl">50000</span>, index<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/character.html">character</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
+                    <span class="va">multicoreParam</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/MulticoreParam-class.html">MulticoreParam</a></span><span class="op">(</span>workers<span class="op">=</span><span class="fl">2</span><span class="op">)</span>; <span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/register.html">register</a></span><span class="op">(</span><span class="va">multicoreParam</span><span class="op">)</span>; <span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/register.html">registered</a></span><span class="op">(</span><span class="op">)</span>
+                    <span class="va">counteByg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/bplapply.html">bplapply</a></span><span class="op">(</span><span class="va">bfl</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu">summarizeOverlaps</span><span class="op">(</span><span class="va">eByg</span>, <span class="va">x</span>, mode<span class="op">=</span><span class="st">"Union"</span>, 
+                                                                   ignore.strand<span class="op">=</span><span class="cn">TRUE</span>, 
+                                                                   inter.feature<span class="op">=</span><span class="cn">FALSE</span>, 
+                                                                   singleEnd<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> 
+                    <span class="va">countDFeByg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">sapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span>along<span class="op">=</span><span class="va">counteByg</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu">assays</span><span class="op">(</span><span class="va">counteByg</span><span class="op">[[</span><span class="va">x</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">$</span><span class="va">counts</span><span class="op">)</span>
+                    <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span><span class="op">(</span><span class="va">countDFeByg</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="fu">rowRanges</span><span class="op">(</span><span class="va">counteByg</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>; <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">countDFeByg</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">bfl</span><span class="op">)</span>
+                    <span class="va">rpkmDFeByg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span><span class="op">(</span><span class="va">countDFeByg</span>, <span class="fl">2</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/pkg/systemPipeR/man/returnRPKM.html">returnRPKM</a></span><span class="op">(</span>counts<span class="op">=</span><span class="va">x</span>, ranges<span class="op">=</span><span class="va">eByg</span><span class="op">)</span><span class="op">)</span>
+                    <span class="fu"><a href="https://rdrr.io/r/utils/write.table.html">write.table</a></span><span class="op">(</span><span class="va">countDFeByg</span>, <span class="st">"results/countDFeByg.xls"</span>, col.names<span class="op">=</span><span class="cn">NA</span>, quote<span class="op">=</span><span class="cn">FALSE</span>, sep<span class="op">=</span><span class="st">"\t"</span><span class="op">)</span>
+                    <span class="fu"><a href="https://rdrr.io/r/utils/write.table.html">write.table</a></span><span class="op">(</span><span class="va">rpkmDFeByg</span>, <span class="st">"results/rpkmDFeByg.xls"</span>, col.names<span class="op">=</span><span class="cn">NA</span>, quote<span class="op">=</span><span class="cn">FALSE</span>, sep<span class="op">=</span><span class="st">"\t"</span><span class="op">)</span>
+                    <span class="op">}</span>, step_name <span class="op">=</span> <span class="st">"read_counting"</span>, 
+                    dependency <span class="op">=</span> <span class="st">"create_db"</span><span class="op">)</span></code></pre></div>
+<p>Note, for most statistical differential expression or abundance analysis
+methods, such as <code>edgeR</code> or <code>DESeq2</code>, the raw count values should be used as input. The
+usage of RPKM values should be restricted to specialty applications
+required by some users, <em>e.g.</em> manually comparing the expression levels
+among different genes or features.</p>
+</div>
+<div id="sample-wise-correlation-analysis" class="section level5" number="4.3.2.4.3">
+<h5>
+<span class="header-section-number">4.3.2.4.3</span> Sample-wise correlation analysis<a class="anchor" aria-label="anchor" href="#sample-wise-correlation-analysis"><i class="fas fa-link"></i></a>
+</h5>
+<p>The following computes the sample-wise Spearman correlation coefficients from
+the <code>rlog</code> transformed expression values generated with the <code>DESeq2</code> package. After
+transformation to a distance matrix, hierarchical clustering is performed with
+the <code>hclust</code> function and the result is plotted as a dendrogram
+(also see file <code>sample_tree.pdf</code>).</p>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">appendStep</span><span class="op">(</span><span class="va">sal</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/systemPipeR/man/LineWise-class.html">LineWise</a></span><span class="op">(</span><span class="op">{</span>
+                    <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mikelove/DESeq2">DESeq2</a></span>, quietly<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span>; <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://ape-package.ird.fr/">ape</a></span>,  warn.conflicts<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span>
+                    <span class="va">countDF</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/read.table.html">read.table</a></span><span class="op">(</span><span class="st">"./results/countDFeByg.xls"</span><span class="op">)</span><span class="op">)</span>
+                    <span class="va">colData</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>row.names<span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/systemPipeR/man/SYSargsList-class.html">SampleName</a></span><span class="op">(</span><span class="va">sal</span>, <span class="st">"hisat2_mapping"</span><span class="op">)</span>, condition<span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/systemPipeR/man/SYSargsList-class.html">getColumn</a></span><span class="op">(</span><span class="va">sal</span>, <span class="st">"hisat2_mapping"</span>, position <span class="op">=</span> <span class="st">"targetsWF"</span>, column <span class="op">=</span> <span class="st">"Factor"</span> <span class="op">)</span><span class="op">)</span>
+                    <span class="va">dds</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/DESeq2/man/DESeqDataSet.html">DESeqDataSetFromMatrix</a></span><span class="op">(</span>countData <span class="op">=</span> <span class="va">countDF</span>, colData <span class="op">=</span> <span class="va">colData</span>, design <span class="op">=</span> <span class="op">~</span> <span class="va">condition</span><span class="op">)</span>
+                    <span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span><span class="op">(</span><span class="fu">assay</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/DESeq2/man/rlog.html">rlog</a></span><span class="op">(</span><span class="va">dds</span><span class="op">)</span><span class="op">)</span>, method<span class="op">=</span><span class="st">"spearman"</span><span class="op">)</span>
+                    <span class="va">hc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/hclust.html">hclust</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/dist.html">dist</a></span><span class="op">(</span><span class="fl">1</span><span class="op">-</span><span class="va">d</span><span class="op">)</span><span class="op">)</span>
+                    <span class="fu"><a href="https://rdrr.io/r/grDevices/pdf.html">pdf</a></span><span class="op">(</span><span class="st">"results/sample_tree.pdf"</span><span class="op">)</span>
+                    <span class="fu"><a href="https://rdrr.io/pkg/ape/man/plot.phylo.html">plot.phylo</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/ape/man/as.phylo.html">as.phylo</a></span><span class="op">(</span><span class="va">hc</span><span class="op">)</span>, type<span class="op">=</span><span class="st">"p"</span>, edge.col<span class="op">=</span><span class="st">"blue"</span>, edge.width<span class="op">=</span><span class="fl">2</span>, show.node.label<span class="op">=</span><span class="cn">TRUE</span>, no.margin<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span>
+                    <span class="fu"><a href="https://rdrr.io/r/grDevices/dev.html">dev.off</a></span><span class="op">(</span><span class="op">)</span>
+                    <span class="op">}</span>, step_name <span class="op">=</span> <span class="st">"sample_tree"</span>, 
+                    dependency <span class="op">=</span> <span class="st">"read_counting"</span><span class="op">)</span></code></pre></div>
+<img src="results/sample_tree.png"><div align="center">
+Figure 2: Correlation dendrogram of samples
+</div>
+<p></p>
+</div>
+</div>
+<div id="analysis-of-degs" class="section level4" number="4.3.2.5">
+<h4>
+<span class="header-section-number">4.3.2.5</span> Analysis of DEGs<a class="anchor" aria-label="anchor" href="#analysis-of-degs"><i class="fas fa-link"></i></a>
+</h4>
+<p>The analysis of differentially expressed genes (DEGs) is performed with
+the <code>glm</code> method of the <code>edgeR</code> package <span class="citation">(<a href="references-1.html#ref-Robinson2010-uk" role="doc-biblioref">Robinson, McCarthy, and Smyth 2010</a>)</span>. The sample
+comparisons used by this analysis are defined in the header lines of the
+<code>targets.txt</code> file starting with <code>&lt;CMP&gt;</code>.</p>
+<div id="run-edger" class="section level5" number="4.3.2.5.1">
+<h5>
+<span class="header-section-number">4.3.2.5.1</span> Run <code>edgeR</code><a class="anchor" aria-label="anchor" href="#run-edger"><i class="fas fa-link"></i></a>
+</h5>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">appendStep</span><span class="op">(</span><span class="va">sal</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/systemPipeR/man/LineWise-class.html">LineWise</a></span><span class="op">(</span><span class="op">{</span>
+                    <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://bioinf.wehi.edu.au/edgeR">edgeR</a></span><span class="op">)</span>
+                    <span class="va">countDF</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html">read.delim</a></span><span class="op">(</span><span class="st">"results/countDFeByg.xls"</span>, row.names<span class="op">=</span><span class="fl">1</span>, check.names<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span> 
+                    <span class="va">cmp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/systemPipeR/man/readComp.html">readComp</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/systemPipeR/man/SYSargsList-class.html">stepsWF</a></span><span class="op">(</span><span class="va">sal</span><span class="op">)</span><span class="op">[[</span><span class="st">'hisat2_mapping'</span><span class="op">]</span><span class="op">]</span>, format<span class="op">=</span><span class="st">"matrix"</span>, delim<span class="op">=</span><span class="st">"-"</span><span class="op">)</span>
+                    <span class="va">edgeDF</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/systemPipeR/man/run_edgeR.html">run_edgeR</a></span><span class="op">(</span>countDF<span class="op">=</span><span class="va">countDF</span>, targets<span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/systemPipeR/man/SYSargsList-class.html">targetsWF</a></span><span class="op">(</span><span class="va">sal</span><span class="op">)</span><span class="op">[[</span><span class="st">'hisat2_mapping'</span><span class="op">]</span><span class="op">]</span>, cmp<span class="op">=</span><span class="va">cmp</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, independent<span class="op">=</span><span class="cn">FALSE</span>, mdsplot<span class="op">=</span><span class="st">""</span><span class="op">)</span>
+                    <span class="op">}</span>, step_name <span class="op">=</span> <span class="st">"run_edger"</span>, 
+                    dependency <span class="op">=</span> <span class="st">"read_counting"</span><span class="op">)</span></code></pre></div>
+</div>
+<div id="add-gene-descriptions" class="section level5" number="4.3.2.5.2">
+<h5>
+<span class="header-section-number">4.3.2.5.2</span> Add gene descriptions<a class="anchor" aria-label="anchor" href="#add-gene-descriptions"><i class="fas fa-link"></i></a>
+</h5>
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">appendStep</span><span class="op">(</span><span class="va">sal</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/systemPipeR/man/LineWise-class.html">LineWise</a></span><span class="op">(</span><span class="op">{</span>
+                    <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st">"biomaRt"</span><span class="op">)</span>
+                    <span class="va">m</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/biomaRt/man/useMart.html">useMart</a></span><span class="op">(</span><span class="st">"plants_mart"</span>, dataset<span class="op">=</span><span class="st">"athaliana_eg_gene"</span>, host<span class="op">=</span><span class="st">"plants.ensembl.org"</span><span class="op">)</span>
+                    <span class="va">desc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/biomaRt/man/getBM.html">getBM</a></span><span class="op">(</span>attributes<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"tair_locus"</span>, <span class="st">"description"</span><span class="op">)</span>, mart<span class="op">=</span><span class="va">m</span><span class="op">)</span>
+                    <span class="va">desc</span> <span class="op">&lt;-</span> <span class="va">desc</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/duplicated.html">duplicated</a></span><span class="op">(</span><span class="va">desc</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span>,<span class="op">]</span>
+                    <span class="va">descv</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="va">desc</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span><span class="op">)</span>; <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">descv</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="va">desc</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span>
+                    <span class="va">edgeDF</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span><span class="va">edgeDF</span>, Desc<span class="op">=</span><span class="va">descv</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span><span class="op">(</span><span class="va">edgeDF</span><span class="op">)</span><span class="op">]</span>, check.names<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span>
+                    <span class="fu"><a href="https://rdrr.io/r/utils/write.table.html">write.table</a></span><span class="op">(</span><span class="va">edgeDF</span>, <span class="st">"./results/edgeRglm_allcomp.xls"</span>, quote<span class="op">=</span><span class="cn">FALSE</span>, sep<span class="op">=</span><span class="st">"\t"</span>, col.names <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span>
+                    <span class="op">}</span>, step_name <span class="op">=</span> <span class="st">"custom_annot"</span>, 
+                    dependency <span class="op">=</span> <span class="st">"run_edger"</span><span class="op">)</span></code></pre></div>
+</div>
+<div id="plot-deg-results" class="section level5" number="4.3.2.5.3">
+<h5>
+<span class="header-section-number">4.3.2.5.3</span> Plot DEG results<a class="anchor" aria-label="anchor" href="#plot-deg-results"><i class="fas fa-link"></i></a>
+</h5>
+<p>Filter and plot DEG results for up and down regulated genes. The
+definition of <em>up</em> and <em>down</em> is given in the corresponding help
+file. To open it, type <code><a href="https://rdrr.io/pkg/systemPipeR/man/filterDEGs.html">?filterDEGs</a></code> in the R console.</p>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">appendStep</span><span class="op">(</span><span class="va">sal</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/systemPipeR/man/LineWise-class.html">LineWise</a></span><span class="op">(</span><span class="op">{</span>
+                    <span class="va">edgeDF</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html">read.delim</a></span><span class="op">(</span><span class="st">"results/edgeRglm_allcomp.xls"</span>, row.names<span class="op">=</span><span class="fl">1</span>, check.names<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span> 
+                    <span class="fu"><a href="https://rdrr.io/r/grDevices/pdf.html">pdf</a></span><span class="op">(</span><span class="st">"results/DEGcounts.pdf"</span><span class="op">)</span>
+                    <span class="va">DEG_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/systemPipeR/man/filterDEGs.html">filterDEGs</a></span><span class="op">(</span>degDF<span class="op">=</span><span class="va">edgeDF</span>, filter<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>Fold<span class="op">=</span><span class="fl">2</span>, FDR<span class="op">=</span><span class="fl">20</span><span class="op">)</span><span class="op">)</span>
+                    <span class="fu"><a href="https://rdrr.io/r/grDevices/dev.html">dev.off</a></span><span class="op">(</span><span class="op">)</span>
+                    <span class="fu"><a href="https://rdrr.io/r/utils/write.table.html">write.table</a></span><span class="op">(</span><span class="va">DEG_list</span><span class="op">$</span><span class="va">Summary</span>, <span class="st">"./results/DEGcounts.xls"</span>, quote<span class="op">=</span><span class="cn">FALSE</span>, sep<span class="op">=</span><span class="st">"\t"</span>, row.names<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span>
+                    <span class="op">}</span>, step_name <span class="op">=</span> <span class="st">"filter_degs"</span>, 
+                    dependency <span class="op">=</span> <span class="st">"custom_annot"</span><span class="op">)</span></code></pre></div>
+</div>
+<div id="venn-diagrams-of-deg-sets" class="section level5" number="4.3.2.5.4">
+<h5>
+<span class="header-section-number">4.3.2.5.4</span> Venn diagrams of DEG sets<a class="anchor" aria-label="anchor" href="#venn-diagrams-of-deg-sets"><i class="fas fa-link"></i></a>
+</h5>
+<p>The <code>overLapper</code> function can compute Venn intersects for large numbers of sample
+sets (up to 20 or more) and plots 2-5 way Venn diagrams. A useful
+feature is the possibility to combine the counts from several Venn
+comparisons with the same number of sample sets in a single Venn diagram
+(here for 4 up and down DEG sets).</p>
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">appendStep</span><span class="op">(</span><span class="va">sal</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/systemPipeR/man/LineWise-class.html">LineWise</a></span><span class="op">(</span><span class="op">{</span>
+                    <span class="va">vennsetup</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/systemPipeR/man/overLapper.html">overLapper</a></span><span class="op">(</span><span class="va">DEG_list</span><span class="op">$</span><span class="va">Up</span><span class="op">[</span><span class="fl">6</span><span class="op">:</span><span class="fl">9</span><span class="op">]</span>, type<span class="op">=</span><span class="st">"vennsets"</span><span class="op">)</span>
+                    <span class="va">vennsetdown</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/systemPipeR/man/overLapper.html">overLapper</a></span><span class="op">(</span><span class="va">DEG_list</span><span class="op">$</span><span class="va">Down</span><span class="op">[</span><span class="fl">6</span><span class="op">:</span><span class="fl">9</span><span class="op">]</span>, type<span class="op">=</span><span class="st">"vennsets"</span><span class="op">)</span>
+                    <span class="fu"><a href="https://rdrr.io/r/grDevices/pdf.html">pdf</a></span><span class="op">(</span><span class="st">"results/vennplot.pdf"</span><span class="op">)</span>
+                    <span class="fu"><a href="https://rdrr.io/pkg/systemPipeR/man/vennPlot.html">vennPlot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="va">vennsetup</span>, <span class="va">vennsetdown</span><span class="op">)</span>, mymain<span class="op">=</span><span class="st">""</span>, mysub<span class="op">=</span><span class="st">""</span>, colmode<span class="op">=</span><span class="fl">2</span>, ccol<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"blue"</span>, <span class="st">"red"</span><span class="op">)</span><span class="op">)</span>
+                    <span class="fu"><a href="https://rdrr.io/r/grDevices/dev.html">dev.off</a></span><span class="op">(</span><span class="op">)</span>
+                    <span class="op">}</span>, step_name <span class="op">=</span> <span class="st">"venn_diagram"</span>, 
+                    dependency <span class="op">=</span> <span class="st">"filter_degs"</span><span class="op">)</span></code></pre></div>
+</div>
+</div>
+<div id="go-term-enrichment-analysis" class="section level4" number="4.3.2.6">
+<h4>
+<span class="header-section-number">4.3.2.6</span> GO term enrichment analysis<a class="anchor" aria-label="anchor" href="#go-term-enrichment-analysis"><i class="fas fa-link"></i></a>
+</h4>
+<div id="obtain-gene-to-go-mappings" class="section level5" number="4.3.2.6.1">
+<h5>
+<span class="header-section-number">4.3.2.6.1</span> Obtain gene-to-GO mappings<a class="anchor" aria-label="anchor" href="#obtain-gene-to-go-mappings"><i class="fas fa-link"></i></a>
+</h5>
+<p>The following shows how to obtain gene-to-GO mappings from <code>biomaRt</code> (here for <em>A.
+thaliana</em>) and how to organize them for the downstream GO term
+enrichment analysis. Alternatively, the gene-to-GO mappings can be
+obtained for many organisms from Bioconductor’s <code>*.db</code> genome annotation
+packages or GO annotation files provided by various genome databases.
+For each annotation this relatively slow preprocessing step needs to be
+performed only once. Subsequently, the preprocessed data can be loaded
+with the <code>load</code> function as shown in the next subsection.</p>
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">appendStep</span><span class="op">(</span><span class="va">sal</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/systemPipeR/man/LineWise-class.html">LineWise</a></span><span class="op">(</span><span class="op">{</span>
+                    <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st">"biomaRt"</span><span class="op">)</span>
+                    <span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="op">)</span><span class="op">{</span>
+                      <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/files.html">file.exists</a></span><span class="op">(</span><span class="st">"data/GO/catdb.RData"</span><span class="op">)</span><span class="op">)</span> <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="cn">TRUE</span><span class="op">)</span>
+                      <span class="co"># listMarts() # To choose BioMart database</span>
+                      <span class="co"># listMarts(host="plants.ensembl.org")</span>
+                      <span class="va">m</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/biomaRt/man/useMart.html">useMart</a></span><span class="op">(</span><span class="st">"plants_mart"</span>, host<span class="op">=</span><span class="st">"plants.ensembl.org"</span><span class="op">)</span>
+                      <span class="fu"><a href="https://rdrr.io/pkg/biomaRt/man/listDatasets.html">listDatasets</a></span><span class="op">(</span><span class="va">m</span><span class="op">)</span>
+                      <span class="va">m</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/biomaRt/man/useMart.html">useMart</a></span><span class="op">(</span><span class="st">"plants_mart"</span>, dataset<span class="op">=</span><span class="st">"athaliana_eg_gene"</span>, host<span class="op">=</span><span class="st">"plants.ensembl.org"</span><span class="op">)</span>
+                      <span class="co"># listAttributes(m) # Choose data types you want to download</span>
+                      <span class="va">go</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/biomaRt/man/getBM.html">getBM</a></span><span class="op">(</span>attributes<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"go_id"</span>, <span class="st">"tair_locus"</span>, <span class="st">"namespace_1003"</span><span class="op">)</span>, mart<span class="op">=</span><span class="va">m</span><span class="op">)</span>
+                      <span class="va">go</span> <span class="op">&lt;-</span> <span class="va">go</span><span class="op">[</span><span class="va">go</span><span class="op">[</span>,<span class="fl">3</span><span class="op">]</span><span class="op">!=</span><span class="st">""</span>,<span class="op">]</span>; <span class="va">go</span><span class="op">[</span>,<span class="fl">3</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="va">go</span><span class="op">[</span>,<span class="fl">3</span><span class="op">]</span><span class="op">)</span>
+                      <span class="va">go</span><span class="op">[</span><span class="va">go</span><span class="op">[</span>,<span class="fl">3</span><span class="op">]</span><span class="op">==</span><span class="st">"molecular_function"</span>, <span class="fl">3</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">"F"</span>; <span class="va">go</span><span class="op">[</span><span class="va">go</span><span class="op">[</span>,<span class="fl">3</span><span class="op">]</span><span class="op">==</span><span class="st">"biological_process"</span>, <span class="fl">3</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">"P"</span>; <span class="va">go</span><span class="op">[</span><span class="va">go</span><span class="op">[</span>,<span class="fl">3</span><span class="op">]</span><span class="op">==</span><span class="st">"cellular_component"</span>, <span class="fl">3</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">"C"</span>
+                      <span class="va">go</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span>,<span class="op">]</span>
+                      <span class="fu"><a href="https://rdrr.io/r/base/files2.html">dir.create</a></span><span class="op">(</span><span class="st">"./data/GO"</span><span class="op">)</span>
+                      <span class="fu"><a href="https://rdrr.io/r/utils/write.table.html">write.table</a></span><span class="op">(</span><span class="va">go</span>, <span class="st">"data/GO/GOannotationsBiomart_mod.txt"</span>, quote<span class="op">=</span><span class="cn">FALSE</span>, row.names<span class="op">=</span><span class="cn">FALSE</span>, col.names<span class="op">=</span><span class="cn">FALSE</span>, sep<span class="op">=</span><span class="st">"\t"</span><span class="op">)</span>
+                      <span class="va">catdb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/systemPipeR/man/GOHyperGAll.html">makeCATdb</a></span><span class="op">(</span>myfile<span class="op">=</span><span class="st">"data/GO/GOannotationsBiomart_mod.txt"</span>, lib<span class="op">=</span><span class="cn">NULL</span>, org<span class="op">=</span><span class="st">""</span>, colno<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span>, idconv<span class="op">=</span><span class="cn">NULL</span><span class="op">)</span>
+                      <span class="fu"><a href="https://rdrr.io/r/base/save.html">save</a></span><span class="op">(</span><span class="va">catdb</span>, file<span class="op">=</span><span class="st">"data/GO/catdb.RData"</span><span class="op">)</span>
+                    <span class="op">}</span><span class="op">)</span><span class="op">(</span><span class="op">)</span>
+                    <span class="op">}</span>, step_name <span class="op">=</span> <span class="st">"get_go_annot"</span>, 
+                    dependency <span class="op">=</span> <span class="st">"filter_degs"</span><span class="op">)</span></code></pre></div>
+</div>
+<div id="batch-go-term-enrichment-analysis" class="section level5" number="4.3.2.6.2">
+<h5>
+<span class="header-section-number">4.3.2.6.2</span> Batch GO term enrichment analysis<a class="anchor" aria-label="anchor" href="#batch-go-term-enrichment-analysis"><i class="fas fa-link"></i></a>
+</h5>
+<p>Apply the enrichment analysis to the DEG sets obtained the above differential
+expression analysis. Note, in the following example the <code>FDR</code> filter is set
+here to an unreasonably high value, simply because of the small size of the toy
+data set used in this vignette. Batch enrichment analysis of many gene sets is
+performed with the function. When <code>method=all</code>, it returns all GO terms passing
+the p-value cutoff specified under the <code>cutoff</code> arguments. When <code>method=slim</code>,
+it returns only the GO terms specified under the <code>myslimv</code> argument. The given
+example shows how a GO slim vector for a specific organism can be obtained from
+<code>BioMart</code>.</p>
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">appendStep</span><span class="op">(</span><span class="va">sal</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/systemPipeR/man/LineWise-class.html">LineWise</a></span><span class="op">(</span><span class="op">{</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st">"biomaRt"</span><span class="op">)</span>
+                    <span class="fu"><a href="https://rdrr.io/r/base/load.html">load</a></span><span class="op">(</span><span class="st">"data/GO/catdb.RData"</span><span class="op">)</span>
+                    <span class="va">DEG_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/systemPipeR/man/filterDEGs.html">filterDEGs</a></span><span class="op">(</span>degDF<span class="op">=</span><span class="va">edgeDF</span>, filter<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>Fold<span class="op">=</span><span class="fl">2</span>, FDR<span class="op">=</span><span class="fl">50</span><span class="op">)</span>, plot<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span>
+                    <span class="va">up_down</span> <span class="op">&lt;-</span> <span class="va">DEG_list</span><span class="op">$</span><span class="va">UporDown</span>; <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">up_down</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">up_down</span><span class="op">)</span>, <span class="st">"_up_down"</span>, sep<span class="op">=</span><span class="st">""</span><span class="op">)</span>
+                    <span class="va">up</span> <span class="op">&lt;-</span> <span class="va">DEG_list</span><span class="op">$</span><span class="va">Up</span>; <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">up</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">up</span><span class="op">)</span>, <span class="st">"_up"</span>, sep<span class="op">=</span><span class="st">""</span><span class="op">)</span>
+                    <span class="va">down</span> <span class="op">&lt;-</span> <span class="va">DEG_list</span><span class="op">$</span><span class="va">Down</span>; <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">down</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">down</span><span class="op">)</span>, <span class="st">"_down"</span>, sep<span class="op">=</span><span class="st">""</span><span class="op">)</span>
+                    <span class="va">DEGlist</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">up_down</span>, <span class="va">up</span>, <span class="va">down</span><span class="op">)</span>
+                    <span class="va">DEGlist</span> <span class="op">&lt;-</span> <span class="va">DEGlist</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html">sapply</a></span><span class="op">(</span><span class="va">DEGlist</span>, <span class="va">length</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">]</span>
+                    <span class="va">BatchResult</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/systemPipeR/man/GOHyperGAll.html">GOCluster_Report</a></span><span class="op">(</span>catdb<span class="op">=</span><span class="va">catdb</span>, setlist<span class="op">=</span><span class="va">DEGlist</span>, method<span class="op">=</span><span class="st">"all"</span>, id_type<span class="op">=</span><span class="st">"gene"</span>, CLSZ<span class="op">=</span><span class="fl">2</span>, cutoff<span class="op">=</span><span class="fl">0.9</span>, gocats<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"MF"</span>, <span class="st">"BP"</span>, <span class="st">"CC"</span><span class="op">)</span>, recordSpecGO<span class="op">=</span><span class="cn">NULL</span><span class="op">)</span>
+                    <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st">"biomaRt"</span><span class="op">)</span>
+                    <span class="va">m</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/biomaRt/man/useMart.html">useMart</a></span><span class="op">(</span><span class="st">"plants_mart"</span>, dataset<span class="op">=</span><span class="st">"athaliana_eg_gene"</span>, host<span class="op">=</span><span class="st">"plants.ensembl.org"</span><span class="op">)</span>
+                    <span class="va">goslimvec</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/biomaRt/man/getBM.html">getBM</a></span><span class="op">(</span>attributes<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"goslim_goa_accession"</span><span class="op">)</span>, mart<span class="op">=</span><span class="va">m</span><span class="op">)</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span>
+                    <span class="va">BatchResultslim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/systemPipeR/man/GOHyperGAll.html">GOCluster_Report</a></span><span class="op">(</span>catdb<span class="op">=</span><span class="va">catdb</span>, setlist<span class="op">=</span><span class="va">DEGlist</span>, method<span class="op">=</span><span class="st">"slim"</span>, id_type<span class="op">=</span><span class="st">"gene"</span>, myslimv<span class="op">=</span><span class="va">goslimvec</span>, CLSZ<span class="op">=</span><span class="fl">10</span>, cutoff<span class="op">=</span><span class="fl">0.01</span>, gocats<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"MF"</span>, <span class="st">"BP"</span>, <span class="st">"CC"</span><span class="op">)</span>, recordSpecGO<span class="op">=</span><span class="cn">NULL</span><span class="op">)</span>
+                    <span class="op">}</span>, step_name <span class="op">=</span> <span class="st">"go_enrich"</span>, 
+                    dependency <span class="op">=</span> <span class="st">"get_go_annot"</span><span class="op">)</span></code></pre></div>
+</div>
+<div id="plot-batch-go-term-results" class="section level5" number="4.3.2.6.3">
+<h5>
+<span class="header-section-number">4.3.2.6.3</span> Plot batch GO term results<a class="anchor" aria-label="anchor" href="#plot-batch-go-term-results"><i class="fas fa-link"></i></a>
+</h5>
+<p>The <code>data.frame</code> generated by <code>GOCluster</code> can be plotted with the <code>goBarplot</code> function. Because of the
+variable size of the sample sets, it may not always be desirable to show
+the results from different DEG sets in the same bar plot. Plotting
+single sample sets is achieved by subsetting the input data frame as
+shown in the first line of the following example.</p>
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">appendStep</span><span class="op">(</span><span class="va">sal</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/systemPipeR/man/LineWise-class.html">LineWise</a></span><span class="op">(</span><span class="op">{</span>
+                    <span class="va">gos</span> <span class="op">&lt;-</span> <span class="va">BatchResultslim</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html">grep</a></span><span class="op">(</span><span class="st">"M6-V6_up_down"</span>, <span class="va">BatchResultslim</span><span class="op">$</span><span class="va">CLID</span><span class="op">)</span>, <span class="op">]</span>
+                    <span class="va">gos</span> <span class="op">&lt;-</span> <span class="va">BatchResultslim</span>
+                    <span class="fu"><a href="https://rdrr.io/r/grDevices/pdf.html">pdf</a></span><span class="op">(</span><span class="st">"results/GOslimbarplotMF.pdf"</span>, height<span class="op">=</span><span class="fl">8</span>, width<span class="op">=</span><span class="fl">10</span><span class="op">)</span>
+                    <span class="fu"><a href="https://rdrr.io/pkg/systemPipeR/man/GOHyperGAll.html">goBarplot</a></span><span class="op">(</span><span class="va">gos</span>, gocat<span class="op">=</span><span class="st">"MF"</span><span class="op">)</span>
+                    <span class="fu"><a href="https://rdrr.io/r/grDevices/dev.html">dev.off</a></span><span class="op">(</span><span class="op">)</span>
+                    <span class="fu"><a href="https://rdrr.io/pkg/systemPipeR/man/GOHyperGAll.html">goBarplot</a></span><span class="op">(</span><span class="va">gos</span>, gocat<span class="op">=</span><span class="st">"BP"</span><span class="op">)</span>
+                    <span class="fu"><a href="https://rdrr.io/pkg/systemPipeR/man/GOHyperGAll.html">goBarplot</a></span><span class="op">(</span><span class="va">gos</span>, gocat<span class="op">=</span><span class="st">"CC"</span><span class="op">)</span>
+                    <span class="op">}</span>, step_name <span class="op">=</span> <span class="st">"go_plot"</span>, 
+                    dependency <span class="op">=</span> <span class="st">"go_enrich"</span><span class="op">)</span></code></pre></div>
+<img src="results/GOslimbarplotMF.png"><div align="center">
+Figure 5: GO Slim Barplot for MF Ontology
+</div>
+<p></p>
+</div>
+</div>
+<div id="clustering-and-heat-maps" class="section level4" number="4.3.2.7">
+<h4>
+<span class="header-section-number">4.3.2.7</span> Clustering and heat maps<a class="anchor" aria-label="anchor" href="#clustering-and-heat-maps"><i class="fas fa-link"></i></a>
+</h4>
+<p>The following example performs hierarchical clustering on the <code>rlog</code>
+transformed expression matrix subsetted by the DEGs identified in the above
+differential expression analysis. It uses a Pearson correlation-based distance
+measure and complete linkage for cluster joining.</p>
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">appendStep</span><span class="op">(</span><span class="va">sal</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/systemPipeR/man/LineWise-class.html">LineWise</a></span><span class="op">(</span><span class="op">{</span>
+                    <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">pheatmap</span><span class="op">)</span>
+                    <span class="va">geneids</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span><span class="op">(</span><span class="va">DEG_list</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
+                    <span class="va">y</span> <span class="op">&lt;-</span> <span class="fu">assay</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/DESeq2/man/rlog.html">rlog</a></span><span class="op">(</span><span class="va">dds</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="va">geneids</span>, <span class="op">]</span>
+                    <span class="fu"><a href="https://rdrr.io/r/grDevices/pdf.html">pdf</a></span><span class="op">(</span><span class="st">"results/heatmap1.pdf"</span><span class="op">)</span>
+                    <span class="fu"><a href="https://rdrr.io/pkg/pheatmap/man/pheatmap.html">pheatmap</a></span><span class="op">(</span><span class="va">y</span>, scale<span class="op">=</span><span class="st">"row"</span>, clustering_distance_rows<span class="op">=</span><span class="st">"correlation"</span>, clustering_distance_cols<span class="op">=</span><span class="st">"correlation"</span><span class="op">)</span>
+                    <span class="fu"><a href="https://rdrr.io/r/grDevices/dev.html">dev.off</a></span><span class="op">(</span><span class="op">)</span>
+                    <span class="op">}</span>, step_name <span class="op">=</span> <span class="st">"heatmap"</span>, 
+                    dependency <span class="op">=</span> <span class="st">"go_enrich"</span><span class="op">)</span></code></pre></div>
+<img src="results/heatmap1.png"><div align="center">
+Figure 6: Heat Map with Hierarchical Clustering Dendrograms of DEGs
+</div>
+<p></p>
+</div>
+<div id="version-information" class="section level4" number="4.3.2.8">
+<h4>
+<span class="header-section-number">4.3.2.8</span> Version Information<a class="anchor" aria-label="anchor" href="#version-information"><i class="fas fa-link"></i></a>
+</h4>
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">appendStep</span><span class="op">(</span><span class="va">sal</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/systemPipeR/man/LineWise-class.html">LineWise</a></span><span class="op">(</span><span class="op">{</span>
+                    <span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html">sessionInfo</a></span><span class="op">(</span><span class="op">)</span>
+                    <span class="op">}</span>, step_name <span class="op">=</span> <span class="st">"sessionInfo"</span>, 
+                    dependency <span class="op">=</span> <span class="st">"heatmap"</span><span class="op">)</span></code></pre></div>
+</div>
+</div>
+<div id="references" class="section level3" number="4.3.3">
+<h3>
+<span class="header-section-number">4.3.3</span> References<a class="anchor" aria-label="anchor" href="#references"><i class="fas fa-link"></i></a>
+</h3>
+
+</div>
+</div>
+</div>
+  <div class="chapter-nav">
+<div class="prev"><a href="resources.html"><span class="header-section-number">3</span> Resources</a></div>
+<div class="next"><a href="settings.html"><span class="header-section-number">5</span> Settings</a></div>
+</div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
+    <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
+      <ul class="nav navbar-nav">
+<li><a class="nav-link" href="#systempiper-rna-seq-workflow-analysis"><span class="header-section-number">4</span> systemPipeR RNA-seq Workflow Analysis</a></li>
+<li>
+<a class="nav-link" href="#quick-start-1"><span class="header-section-number">4.1</span> Quick Start</a><ul class="nav navbar-nav"><li><a class="nav-link" href="#create-the-workflow"><span class="header-section-number">4.1.1</span> Create the workflow</a></li></ul>
+</li>
+<li>
+<a class="nav-link" href="#running-workflow"><span class="header-section-number">4.2</span> Running workflow</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#visualize-workflow"><span class="header-section-number">4.2.1</span> Visualize workflow</a></li>
+<li><a class="nav-link" href="#checking-workflow-status"><span class="header-section-number">4.2.2</span> Checking workflow status</a></li>
+<li><a class="nav-link" href="#accessing-logs-report"><span class="header-section-number">4.2.3</span> Accessing logs report</a></li>
+</ul>
+</li>
+<li>
+<a class="nav-link" href="#systempiper-rna-seq-workflow-analysis-notebook"><span class="header-section-number">4.3</span> systemPipeR RNA-seq Workflow Analysis Notebook</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#introduction"><span class="header-section-number">4.3.1</span> Introduction</a></li>
+<li><a class="nav-link" href="#create-the-workflow-1"><span class="header-section-number">4.3.2</span> Create the workflow</a></li>
+<li><a class="nav-link" href="#references"><span class="header-section-number">4.3.3</span> References</a></li>
+</ul>
+</li>
+</ul>
+
+      <div class="book-extra">
+        <ul class="list-unstyled">
+<li><a id="book-source" href="https://github.com/dcassol/wdl_rnaseq/blob/master/systemPipeRNAseq_docs.Rmd">View source <i class="fab fa-github"></i></a></li>
+          <li><a id="book-edit" href="https://github.com/dcassol/wdl_rnaseq/edit/master/systemPipeRNAseq_docs.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
+        </ul>
+</div>
+    </nav>
+</div>
+
+</div>
+</div> <!-- .container -->
+
+<footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>"<strong>RNA-seq Workflow</strong>" was written by Daniela Cassol. It was last built on 2022-01-04.</p>
+  </div>
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>This book was built by the <a class="text-light" href="https://bookdown.org">bookdown</a> R package.</p>
+  </div>
+
+</div></div>
+</footer>
+</body>
+</html>

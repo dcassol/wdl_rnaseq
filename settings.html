@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Chapter 5 Settings | RNA-seq Workflow</title>
+<meta name="author" content="Daniela Cassol">
+<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.2"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/header-attrs-2.9/header-attrs.js"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
+<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.2.5.1/tabs.js"></script><script src="libs/bs3compat-0.2.5.1/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
+<script src="libs/bs4_book-1.0.0/bs4_book.js"></script><script src="libs/htmlwidgets-1.5.3/htmlwidgets.js"></script><link href="libs/vizjs-2.1.2/plotwf.css" rel="stylesheet">
+<script src="libs/vizjs-2.1.2/viz.js"></script><script src="libs/vizjs-2.1.2/full.render.js"></script><script src="libs/dom_to_image-2.6/dom_to_image.js"></script><link id="plotwf_legend-1-attachment" rel="attachment" href="libs/plotwf_legend-1/plotwf_legend.svg">
+<script src="libs/plotwf-binding-2.1.12/plotwf.js"></script><script src="https://cdn.jsdelivr.net/autocomplete.js/0/autocomplete.jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/mark.js@8.11.1/dist/mark.min.js"></script><!-- CSS -->
+</head>
+<body data-spy="scroll" data-target="#toc">
+
+<div class="container-fluid">
+<div class="row">
+  <header class="col-sm-12 col-lg-3 sidebar sidebar-book"><a class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
+
+    <div class="d-flex align-items-start justify-content-between">
+      <h1>
+        <a href="index.html" title="">RNA-seq Workflow</a>
+      </h1>
+      <button class="btn btn-outline-primary d-lg-none ml-2 mt-1" type="button" data-toggle="collapse" data-target="#main-nav" aria-expanded="true" aria-controls="main-nav"><i class="fas fa-bars"></i><span class="sr-only">Show table of contents</span></button>
+    </div>
+
+    <div id="main-nav" class="collapse-lg">
+      <form role="search">
+        <input id="search" class="form-control" type="search" placeholder="Search" aria-label="Search">
+</form>
+
+      <nav aria-label="Table of contents"><h2>Table of contents</h2>
+        <ul class="book-toc list-unstyled">
+<li><a class="" href="index.html">Welcome</a></li>
+<li><a class="" href="directory-structure.html"><span class="header-section-number">1</span> Directory Structure</a></li>
+<li><a class="" href="sample-data.html"><span class="header-section-number">2</span> Sample Data</a></li>
+<li><a class="" href="resources.html"><span class="header-section-number">3</span> Resources</a></li>
+<li><a class="" href="systempiper-rna-seq-workflow-analysis.html"><span class="header-section-number">4</span> systemPipeR RNA-seq Workflow Analysis</a></li>
+<li><a class="active" href="settings.html"><span class="header-section-number">5</span> Settings</a></li>
+<li><a class="" href="references-1.html">References</a></li>
+</ul>
+
+        <div class="book-extra">
+          <p><a id="book-repo" href="https://github.com/dcassol/wdl_rnaseq">View book source <i class="fab fa-github"></i></a></p>
+        </div>
+      </nav>
+</div>
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="settings" class="section level1" number="5">
+<h1>
+<span class="header-section-number">5</span> Settings<a class="anchor" aria-label="anchor" href="#settings"><i class="fas fa-link"></i></a>
+</h1>
+<p>This section will demonstrate <em>how to</em>:</p>
+<ul>
+<li>
+<a href="settings.html#install-cromwell-locally">install <code>cromwell</code></a>;</li>
+<li>
+<a href="settings.html#docker">create the docker image used in this tutorial and deploy docker image on Docker Hub</a>;</li>
+<li>
+<a href="settings.html#singularity-container">create Singularity container from docker</a>;</li>
+<li>
+<a href="settings.html#build-website">build the webpage</a>.</li>
+</ul>
+<p>Extra notes are included here.</p>
+<div id="install-cromwell-locally" class="section level2" number="5.1">
+<h2>
+<span class="header-section-number">5.1</span> Install <code>cromwell</code> locally<a class="anchor" aria-label="anchor" href="#install-cromwell-locally"><i class="fas fa-link"></i></a>
+</h2>
+<div id="how-to-install-cromwell-locally-with-conda" class="section level3" number="5.1.1">
+<h3>
+<span class="header-section-number">5.1.1</span> How to Install <code>cromwell</code> locally with Conda<a class="anchor" aria-label="anchor" href="#how-to-install-cromwell-locally-with-conda"><i class="fas fa-link"></i></a>
+</h3>
+<div id="how-to-install-conda" class="section level4" number="5.1.1.1">
+<h4>
+<span class="header-section-number">5.1.1.1</span> How to Install Conda<a class="anchor" aria-label="anchor" href="#how-to-install-conda"><i class="fas fa-link"></i></a>
+</h4>
+<div class="sourceCode" id="cb36"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb36-1"><a href="settings.html#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> https://repo.anaconda.com/miniconda/Miniconda3-py38_4.10.3-Linux-x86_64.sh</span>
+<span id="cb36-2"><a href="settings.html#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> Miniconda3-latest-Linux-x86_64.sh</span>
+<span id="cb36-3"><a href="settings.html#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> config <span class="at">--add</span> channels conda-forge</span>
+<span id="cb36-4"><a href="settings.html#cb36-4" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> config <span class="at">--set</span> channel_priority strict</span>
+<span id="cb36-5"><a href="settings.html#cb36-5" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> install <span class="op">&lt;</span>package-name<span class="op">&gt;</span></span>
+<span id="cb36-6"><a href="settings.html#cb36-6" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> deactivate <span class="co">## deactivate</span></span>
+<span id="cb36-7"><a href="settings.html#cb36-7" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> activate <span class="co">## activate</span></span>
+<span id="cb36-8"><a href="settings.html#cb36-8" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> update <span class="at">-n</span> base <span class="at">-c</span> defaults conda <span class="co">## update</span></span>
+<span id="cb36-9"><a href="settings.html#cb36-9" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> <span class="at">--version</span> <span class="co">## check version </span></span>
+<span id="cb36-10"><a href="settings.html#cb36-10" aria-hidden="true" tabindex="-1"></a><span class="co">## conda 4.11.0</span></span></code></pre></div>
+</div>
+<div id="install-cromwell-locally-with-conda" class="section level4" number="5.1.1.2">
+<h4>
+<span class="header-section-number">5.1.1.2</span> Install <code>cromwell</code> locally with Conda<a class="anchor" aria-label="anchor" href="#install-cromwell-locally-with-conda"><i class="fas fa-link"></i></a>
+</h4>
+<div class="sourceCode" id="cb37"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb37-1"><a href="settings.html#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> install cromwell</span>
+<span id="cb37-2"><a href="settings.html#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="ex">cromwell</span> <span class="at">--version</span></span>
+<span id="cb37-3"><a href="settings.html#cb37-3" aria-hidden="true" tabindex="-1"></a><span class="co">## cromwell 72</span></span></code></pre></div>
+</div>
+</div>
+<div id="how-to-install-cromwell-from-github" class="section level3" number="5.1.2">
+<h3>
+<span class="header-section-number">5.1.2</span> How to Install <code>cromwell</code> from GitHub<a class="anchor" aria-label="anchor" href="#how-to-install-cromwell-from-github"><i class="fas fa-link"></i></a>
+</h3>
+<div class="sourceCode" id="cb38"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb38-1"><a href="settings.html#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ~</span>
+<span id="cb38-2"><a href="settings.html#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> cromwell</span>
+<span id="cb38-3"><a href="settings.html#cb38-3" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> cromwell/</span>
+<span id="cb38-4"><a href="settings.html#cb38-4" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> https://github.com/broadinstitute/cromwell/releases/download/72/cromwell-72.jar</span>
+<span id="cb38-5"><a href="settings.html#cb38-5" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ~</span>
+<span id="cb38-6"><a href="settings.html#cb38-6" aria-hidden="true" tabindex="-1"></a><span class="ex">java</span> <span class="at">-jar</span> ~/cromwell/cromwell-72.jar</span></code></pre></div>
+<p>To simplify, you can create a file call <code>cromwell</code> and export to your PATH</p>
+<div class="sourceCode" id="cb39"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb39-1"><a href="settings.html#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="ex">!/bin/bash</span></span>
+<span id="cb39-2"><a href="settings.html#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="op">&lt;</span>cromwell_PATH<span class="op">&gt;</span>/cromwell-72.jar <span class="va">$@</span></span></code></pre></div>
+<div class="sourceCode" id="cb40"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb40-1"><a href="settings.html#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cromwell</span> <span class="at">--version</span></span></code></pre></div>
+</div>
+</div>
+<div id="docker" class="section level2" number="5.2">
+<h2>
+<span class="header-section-number">5.2</span> Docker<a class="anchor" aria-label="anchor" href="#docker"><i class="fas fa-link"></i></a>
+</h2>
+<div id="how-to-create-a-repository" class="section level3" number="5.2.1">
+<h3>
+<span class="header-section-number">5.2.1</span> How to create a repository:<a class="anchor" aria-label="anchor" href="#how-to-create-a-repository"><i class="fas fa-link"></i></a>
+</h3>
+<ul>
+<li>Create your first repository <a href="https://docs.docker.com/docker-hub/">Link</a>
+</li>
+</ul>
+<ol style="list-style-type: decimal">
+<li>Sign in to Docker Hub.</li>
+<li>Click <code>Create a Repository</code> on the Docker Hub welcome page:
+<ol style="list-style-type: lower-alpha">
+<li>Name it <your-username>/my-repo.</your-username>
+</li>
+<li>Add a Description.</li>
+<li>Click <code>Create</code>.</li>
+</ol>
+</li>
+</ol>
+</div>
+<div id="build-and-push-a-container-image-to-docker-hub-from-your-computer" class="section level3" number="5.2.2">
+<h3>
+<span class="header-section-number">5.2.2</span> Build and push a container image to <strong>Docker Hub</strong> from your computer<a class="anchor" aria-label="anchor" href="#build-and-push-a-container-image-to-docker-hub-from-your-computer"><i class="fas fa-link"></i></a>
+</h3>
+<div id="start-by-creating-a-dockerfile-to-specify-your-application" class="section level4" number="5.2.2.1">
+<h4>
+<span class="header-section-number">5.2.2.1</span> Start by creating a <em>Dockerfile</em> to specify your application<a class="anchor" aria-label="anchor" href="#start-by-creating-a-dockerfile-to-specify-your-application"><i class="fas fa-link"></i></a>
+</h4>
+<div class="sourceCode" id="cb41"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb41-1"><a href="settings.html#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> docker_test</span>
+<span id="cb41-2"><a href="settings.html#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> docker_test</span>
+<span id="cb41-3"><a href="settings.html#cb41-3" aria-hidden="true" tabindex="-1"></a><span class="fu">touch</span> Dockerfile</span></code></pre></div>
+<pre><code>## Docker LBL
+FROM bioconductor/bioconductor_docker:devel
+
+RUN apt-get update &amp;&amp; \
+    apt-get install -y hisat2 bowtie bowtie2 bwa samtools vim &amp;&amp; \
+    apt-get clean &amp;&amp; \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /home/project/RNAseq/
+
+COPY --chown=rstudio:rstudio . /home/project/RNAseq/
+
+## Update Bioconductor packages from devel version
+#RUN Rscript --vanilla -e "options(repos = c(CRAN = 'https://cran.r-project.org')); BiocManager::install(ask=FALSE)"
+
+## Metadata
+LABEL name="dcassol/wdl_rnaseq" \
+      version="wdl_rnaseq:latest" \
+      url="https://github.com/dcassol/wdl_rnaseq" \
+      vendor="LBL RNAseq Workflow" \
+      maintainer="danicassol@gmail.com" \
+      description="LBL RNAseq Workflow docker image" \
+      license="Artistic-2.0"</code></pre>
+<p>This is a minimal example. Please find <a href="https://hub.docker.com/repository/docker/dcassol/wdl_rnaseq">here</a> more details.</p>
+</div>
+<div id="run-docker-build-to-build-your-docker-image" class="section level4" number="5.2.2.2">
+<h4>
+<span class="header-section-number">5.2.2.2</span> Run <code>docker build</code> to build your Docker image<a class="anchor" aria-label="anchor" href="#run-docker-build-to-build-your-docker-image"><i class="fas fa-link"></i></a>
+</h4>
+<div class="sourceCode" id="cb43"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb43-1"><a href="settings.html#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> build <span class="at">-t</span> dcassol/wdl_rnaseq . </span></code></pre></div>
+</div>
+<div id="run-docker-run-to-test-your-docker-image-locally" class="section level4" number="5.2.2.3">
+<h4>
+<span class="header-section-number">5.2.2.3</span> Run <code>docker run</code> to test your Docker image locally<a class="anchor" aria-label="anchor" href="#run-docker-run-to-test-your-docker-image-locally"><i class="fas fa-link"></i></a>
+</h4>
+<div class="sourceCode" id="cb44"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb44-1"><a href="settings.html#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">-dP</span> dcassol/wdl_rnaseq</span>
+<span id="cb44-2"><a href="settings.html#cb44-2" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> ps </span>
+<span id="cb44-3"><a href="settings.html#cb44-3" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> exec <span class="at">-it</span> <span class="op">&lt;</span>IMAGE NAME<span class="op">&gt;</span> /bin/bash</span></code></pre></div>
+</div>
+<div id="run-docker-push-to-push-your-docker-image-to-docker-hub" class="section level4" number="5.2.2.4">
+<h4>
+<span class="header-section-number">5.2.2.4</span> Run <code>docker push</code> to push your Docker image to <strong>Docker Hub</strong><a class="anchor" aria-label="anchor" href="#run-docker-push-to-push-your-docker-image-to-docker-hub"><i class="fas fa-link"></i></a>
+</h4>
+<div class="sourceCode" id="cb45"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb45-1"><a href="settings.html#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> push dcassol/wdl_rnaseq</span></code></pre></div>
+<ul>
+<li>Your repository in <strong>Docker Hub</strong> should now display a new latest tag under <code>Tags</code>
+</li>
+</ul>
+</div>
+<div id="make-changes-to-the-container-and-create-the-new-image" class="section level4" number="5.2.2.5">
+<h4>
+<span class="header-section-number">5.2.2.5</span> Make changes to the container and Create the new image<a class="anchor" aria-label="anchor" href="#make-changes-to-the-container-and-create-the-new-image"><i class="fas fa-link"></i></a>
+</h4>
+<p>Create a folder, for example:</p>
+<div class="sourceCode" id="cb46"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb46-1"><a href="settings.html#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">-dP</span> dcassol/wdl_rnaseq</span>
+<span id="cb46-2"><a href="settings.html#cb46-2" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> ps <span class="co">## To check the NAME &lt;lucid_grothendieck&gt;</span></span>
+<span id="cb46-3"><a href="settings.html#cb46-3" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> exec <span class="at">-it</span> lucid_grothendieck /bin/bash</span>
+<span id="cb46-4"><a href="settings.html#cb46-4" aria-hidden="true" tabindex="-1"></a><span class="ex">root@33c758eb1626:/#</span> R</span>
+<span id="cb46-5"><a href="settings.html#cb46-5" aria-hidden="true" tabindex="-1"></a><span class="ex">setwd</span><span class="er">(</span><span class="st">"home/rstudio/"</span><span class="kw">)</span></span>
+<span id="cb46-6"><a href="settings.html#cb46-6" aria-hidden="true" tabindex="-1"></a><span class="ex">systemPipeRdata::genWorkenvir</span><span class="er">(</span><span class="st">"rnaseq"</span><span class="kw">)</span></span>
+<span id="cb46-7"><a href="settings.html#cb46-7" aria-hidden="true" tabindex="-1"></a><span class="bu">exit</span></span>
+<span id="cb46-8"><a href="settings.html#cb46-8" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> commit <span class="at">-m</span> <span class="st">"Added rnaseq template"</span> <span class="at">-a</span> <span class="st">"Dani Cassol"</span> lucid_grothendieck dcassol/wdl_rnaseq:rnaseq</span>
+<span id="cb46-9"><a href="settings.html#cb46-9" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> push dcassol/wdl_rnaseq:rnaseq</span></code></pre></div>
+<p>Run the new image:</p>
+<div class="sourceCode" id="cb47"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb47-1"><a href="settings.html#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run  <span class="at">-dP</span> dcassol/wdl_rnaseq:rnaseq</span>
+<span id="cb47-2"><a href="settings.html#cb47-2" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> ps </span>
+<span id="cb47-3"><a href="settings.html#cb47-3" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> exec <span class="at">-it</span> <span class="op">&lt;</span>IMAGE NAME<span class="op">&gt;</span> /bin/bash</span></code></pre></div>
+</div>
+</div>
+<div id="docker-commands" class="section level3" number="5.2.3">
+<h3>
+<span class="header-section-number">5.2.3</span> Docker Commands<a class="anchor" aria-label="anchor" href="#docker-commands"><i class="fas fa-link"></i></a>
+</h3>
+<ul>
+<li><p>Docker Login
+<code>docker login</code></p></li>
+<li><p>List which docker machines are available locally
+<code>docker images</code></p></li>
+<li><p>List running containers
+<code>docker ps</code></p></li>
+<li><p>List all containers
+<code>docker ps -a</code></p></li>
+<li><p>Resume a stopped container
+<code>docker start &lt;CONTAINER ID&gt;</code></p></li>
+<li><p>Shell into a running container
+<code>docker exec -it &lt;CONTAINER ID&gt; /bin/bash</code></p></li>
+<li><p>Stop OR remove a cointainer
+<code>docker stop &lt;CONTAINER ID&gt;</code>
+<code>docker rm &lt;CONTAINER ID&gt;</code></p></li>
+<li><p>Remove a image
+<code>docker rmi dcassol/systempipeworkshop2021:rnaseq</code></p></li>
+</ul>
+</div>
+</div>
+<div id="singularity-container" class="section level2" number="5.3">
+<h2>
+<span class="header-section-number">5.3</span> Singularity Container<a class="anchor" aria-label="anchor" href="#singularity-container"><i class="fas fa-link"></i></a>
+</h2>
+<p>Please download the Docker image of <em>dcassol/wdl_rnaseq</em>, as follow:</p>
+<div class="sourceCode" id="cb48"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb48-1"><a href="settings.html#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="ex">singularity</span> pull docker://dcassol/wdl_rnaseq:latest</span></code></pre></div>
+<p>You can also use the <code>build</code> command to download pre-built images from Docker.
+Unlike <code>pull</code>, <code>build</code> will convert the image to the latest <code>Singularity</code> image format after downloading it.</p>
+<div class="sourceCode" id="cb49"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb49-1"><a href="settings.html#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="ex">singularity</span> build wdl_rnaseq_docker_latest.sif docker://dcassol/wdl_rnaseq:latest</span></code></pre></div>
+<p>To run the container:</p>
+<div class="sourceCode" id="cb50"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb50-1"><a href="settings.html#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="ex">singularity</span> shell wdl_rnaseq_docker_latest.sif</span></code></pre></div>
+</div>
+<div id="build-website" class="section level2" number="5.4">
+<h2>
+<span class="header-section-number">5.4</span> Build Website<a class="anchor" aria-label="anchor" href="#build-website"><i class="fas fa-link"></i></a>
+</h2>
+<p>This website was created by the <strong>bookdown</strong> package <span class="citation">(<a href="references-1.html#ref-R-bookdown" role="doc-biblioref">Xie 2021</a>)</span>.
+To build locally, please use the following command:</p>
+<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/getwd.html">setwd</a></span><span class="op">(</span><span class="st">"docs"</span><span class="op">)</span>
+<span class="fu">bookdown</span><span class="fu">::</span><span class="fu"><a href="https://pkgs.rstudio.com/bookdown/reference/render_book.html">render_book</a></span><span class="op">(</span><span class="st">'index.Rmd'</span>, <span class="st">'bookdown::bs4_book'</span><span class="op">)</span></code></pre></div>
+<p>This repository uses <a href="https://github.com/dcassol/wdl_rnaseq/blob/main/.github/workflows/build_deploy.yaml">GitHub Action</a>, and if any file is updated or created, the website will be deployed using <a href="https://pages.github.com/">GitHub Pages</a>, after pushing.</p>
+</div>
+<div id="resources-1" class="section level2" number="5.5">
+<h2>
+<span class="header-section-number">5.5</span> Resources<a class="anchor" aria-label="anchor" href="#resources-1"><i class="fas fa-link"></i></a>
+</h2>
+<ul>
+<li><a href="https://www.mirantis.com/blog/how-do-i-create-a-new-docker-image-for-my-application/">Docker Run: How to create images from an application</a></li>
+<li><a href="https://docs.docker.com/docker-hub/">Docker Hub Quickstart</a></li>
+<li><a href="https://docs.docker.com/ci-cd/github-actions/">Configure GitHub Actions</a></li>
+<li><a href="https://sylabs.io/guides/3.0/user-guide/quick_start.html#interact-with-images">Singularity</a></li>
+</ul>
+</div>
+<div id="common-problems" class="section level2" number="5.6">
+<h2>
+<span class="header-section-number">5.6</span> Common Problems<a class="anchor" aria-label="anchor" href="#common-problems"><i class="fas fa-link"></i></a>
+</h2>
+<pre><code>## Got permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Post http://%2Fvar%2Frun%2Fdocker.sock/v1.24/auth: dial unix /var/run/docker.sock: connect: permission denied</code></pre>
+<p>Solution:</p>
+<div class="sourceCode" id="cb53"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb53-1"><a href="settings.html#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> chmod 666 /var/run/docker.sock</span></code></pre></div>
+</div>
+<div id="extra" class="section level2" number="5.7">
+<h2>
+<span class="header-section-number">5.7</span> Extra:<a class="anchor" aria-label="anchor" href="#extra"><i class="fas fa-link"></i></a>
+</h2>
+<ul>
+<li><a href="https://biowdl-input-converter.readthedocs.io/en/stable/#creating-comma-delimited-files" class="uri">https://biowdl-input-converter.readthedocs.io/en/stable/#creating-comma-delimited-files</a></li>
+</ul>
+<div class="sourceCode" id="cb54"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb54-1"><a href="settings.html#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install biowdl-input-converter</span>
+<span id="cb54-2"><a href="settings.html#cb54-2" aria-hidden="true" tabindex="-1"></a><span class="ex">biowdl-input-converter</span> <span class="at">--validate</span> samples.csv</span>
+<span id="cb54-3"><a href="settings.html#cb54-3" aria-hidden="true" tabindex="-1"></a><span class="ex">biowdl-input-converter</span> <span class="at">-f</span> csv <span class="at">-o</span> samples.yaml samples.csv </span></code></pre></div>
+
+</div>
+</div>
+  <div class="chapter-nav">
+<div class="prev"><a href="systempiper-rna-seq-workflow-analysis.html"><span class="header-section-number">4</span> systemPipeR RNA-seq Workflow Analysis</a></div>
+<div class="next"><a href="references-1.html">References</a></div>
+</div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
+    <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
+      <ul class="nav navbar-nav">
+<li><a class="nav-link" href="#settings"><span class="header-section-number">5</span> Settings</a></li>
+<li>
+<a class="nav-link" href="#install-cromwell-locally"><span class="header-section-number">5.1</span> Install cromwell locally</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#how-to-install-cromwell-locally-with-conda"><span class="header-section-number">5.1.1</span> How to Install cromwell locally with Conda</a></li>
+<li><a class="nav-link" href="#how-to-install-cromwell-from-github"><span class="header-section-number">5.1.2</span> How to Install cromwell from GitHub</a></li>
+</ul>
+</li>
+<li>
+<a class="nav-link" href="#docker"><span class="header-section-number">5.2</span> Docker</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#how-to-create-a-repository"><span class="header-section-number">5.2.1</span> How to create a repository:</a></li>
+<li><a class="nav-link" href="#build-and-push-a-container-image-to-docker-hub-from-your-computer"><span class="header-section-number">5.2.2</span> Build and push a container image to Docker Hub from your computer</a></li>
+<li><a class="nav-link" href="#docker-commands"><span class="header-section-number">5.2.3</span> Docker Commands</a></li>
+</ul>
+</li>
+<li><a class="nav-link" href="#singularity-container"><span class="header-section-number">5.3</span> Singularity Container</a></li>
+<li><a class="nav-link" href="#build-website"><span class="header-section-number">5.4</span> Build Website</a></li>
+<li><a class="nav-link" href="#resources-1"><span class="header-section-number">5.5</span> Resources</a></li>
+<li><a class="nav-link" href="#common-problems"><span class="header-section-number">5.6</span> Common Problems</a></li>
+<li><a class="nav-link" href="#extra"><span class="header-section-number">5.7</span> Extra:</a></li>
+</ul>
+
+      <div class="book-extra">
+        <ul class="list-unstyled">
+<li><a id="book-source" href="https://github.com/dcassol/wdl_rnaseq/blob/master/internalSettings.Rmd">View source <i class="fab fa-github"></i></a></li>
+          <li><a id="book-edit" href="https://github.com/dcassol/wdl_rnaseq/edit/master/internalSettings.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
+        </ul>
+</div>
+    </nav>
+</div>
+
+</div>
+</div> <!-- .container -->
+
+<footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>"<strong>RNA-seq Workflow</strong>" was written by Daniela Cassol. It was last built on 2022-01-04.</p>
+  </div>
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>This book was built by the <a class="text-light" href="https://bookdown.org">bookdown</a> R package.</p>
+  </div>
+
+</div></div>
+</footer>
+</body>
+</html>
